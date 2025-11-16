@@ -460,7 +460,7 @@ const ChatInterface = () => {
         </header>
       )}
 
-      <main className="flex-1 p-4 overflow-x-hidden overflow-y-auto custom-scrollbar flex flex-col">
+      <main className="flex-1 p-4 overflow-y-auto custom-scrollbar flex flex-col min-w-0">
         {!activeConvo ? (
           <NewChatPlaceholder />
         ) : (
