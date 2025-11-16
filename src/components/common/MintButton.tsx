@@ -35,7 +35,7 @@ const MintButton: FC<MintButtonProps> = ({
   );
 
   const buttonClasses = isMobile
-    ? `flex items-center justify-center h-10 w-10 rounded-lg text-white
+    ? `flex items-center justify-center h-8 w-8 rounded-lg text-white
            bg-primary hover:bg-primary/90
            disabled:bg-gray-400 disabled:text-white`
     : `flex items-center px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg

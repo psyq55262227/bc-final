@@ -20,7 +20,7 @@ const MobileLayout = () => {
         {historyOpen && <MobileHistoryOverlay />}
       </AnimatePresence>
 
-      <header className="flex items-center justify-between p-4 bg-sidebar border-b border-border flex-shrink-0">
+      <header className="h-16 flex items-center justify-between p-4 bg-sidebar border-b border-border flex-shrink-0">
         <div className="w-[40px]">
           <button onClick={() => setHistoryOpen(true)} className="p-1">
             <Menu size={24} />

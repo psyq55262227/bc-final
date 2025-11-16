@@ -14,46 +14,44 @@ const ConnectWalletButton: FC<ConnectWalletButtonProps> = ({
   if (address) {
     const text = "Disconnect";
     const icon = <Link2Off className="h-4 w-4" />;
-    const classes = "bg-red-600 hover:bg-red-700 text-white";
+    const classes = "bg-red-100 hover:bg-red-200 text-red-700 rounded-lg";
 
     if (isMobile) {
       return (
         <button
           onClick={disconnectWallet}
-          className="flex items-center justify-center h-10 w-10 rounded-lg bg-red-600 hover:bg-red-700 text-white"
+          className={`flex items-center justify-center h-8 w-8 ${classes}`}
           aria-label="Disconnect Wallet"
         >
-          <Link2Off size={24} />
+          <Link2Off size={16} />
         </button>
       );
     }
     return (
       <button
         onClick={disconnectWallet}
-        className={`flex items-center px-3 py-2 text-sm font-semibold rounded-lg transition-colors ${classes}`}
+        className={`flex items-center px-3 py-2 text-sm font-semibold transition-colors ${classes}`}
       >
         {icon}
         <span className="ml-2">{text}</span>
       </button>
     );
   } else {
-    const classes = "bg-blue-600 hover:bg-blue-700 text-white";
-
     if (isMobile) {
       return (
         <button
           onClick={connectWallet}
-          className="flex items-center justify-center h-10 w-10 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+          className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary hover:bg-primary/90 text-white"
           aria-label="Connect Wallet"
         >
-          <Link2 size={24} />
+          <Link2 size={16} />
         </button>
       );
     }
     return (
       <button
         onClick={connectWallet}
-        className={`flex items-center px-3 py-2 text-sm font-semibold rounded-lg transition-colors ${classes}`}
+        className={`flex items-center px-3 py-2 text-sm font-semibold rounded-lg transition-colors bg-primary hover:bg-primary/90 text-white`}
       >
         <Link2 className="h-4 w-4" />
         <span className="ml-2">Connect Wallet</span>

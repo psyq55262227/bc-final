@@ -22,6 +22,7 @@ const ChatHistoryList: FC<ChatHistoryListProps> = ({ onChatSelect }) => {
   const handleNewChat = () => {
     setActiveId(null);
     navigate("/chat/new");
+    onChatSelect?.();
   };
 
   return (

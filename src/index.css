@@ -36,3 +36,8 @@
     scrollbar-color: #cccccc transparent;
   }
 }
+
+body {
+  max-height: 100vh;
+  overflow: hidden;
+}
