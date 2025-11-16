@@ -47,12 +47,15 @@ const MobileLayout = () => {
     }`;
 
   return (
-    <div className="flex flex-col h-dvh bg-background">
+    <div className="grid grid-rows-[auto_1fr_auto] h-dvh bg-background overflow-hidden">
       <AnimatePresence>
         {historyOpen && <MobileHistoryOverlay />}
       </AnimatePresence>
+
+      {/* Header (第一行) */}
       {headerConfig.title && (
         <header className="h-16 flex items-center justify-between p-4 bg-sidebar border-b border-border flex-shrink-0">
+          {/* ... Header 内部代码不变 ... */}
           <div className="w-[40px]">
             {isChatPage && (
               <button onClick={() => setHistoryOpen(true)} className="p-1">
@@ -60,19 +63,19 @@ const MobileLayout = () => {
               </button>
             )}
           </div>
-
           <h1 className="text-lg font-semibold truncate">
             {headerConfig.title}
           </h1>
-
           <div className="flex justify-end min-w-[40px]">
             {headerConfig.rightAction}
           </div>
         </header>
       )}
-      <main className="flex-1 min-h-0">
+
+      <main className="overflow-y-auto">
         <Outlet />
       </main>
+
       <nav className="h-16 bg-sidebar border-t border-border flex flex-shrink-0">
         <NavLink to="/chat/new" className={navLinkClass}>
           <MessageSquare className="h-6 w-6 mb-1" />
