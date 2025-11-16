@@ -22,7 +22,10 @@ const MobileHistoryOverlay = () => {
         </button>
       </header>
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <ChatHistoryList onChatSelect={() => setHistoryOpen(false)} />
+        <ChatHistoryList
+          onChatSelect={() => setHistoryOpen(false)}
+          variant="mobile"
+        />
       </div>
     </motion.div>
   );

@@ -1,14 +1,18 @@
 import { useAtom } from "jotai";
 import { conversationsAtom, activeConversationIdAtom } from "../../state/atoms";
 import { useNavigate } from "react-router-dom";
-import { MessageCirclePlus } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import type { FC } from "react";
 
 interface ChatHistoryListProps {
   onChatSelect?: () => void;
+  variant?: "desktop" | "mobile";
 }
 
-const ChatHistoryList: FC<ChatHistoryListProps> = ({ onChatSelect }) => {
+const ChatHistoryList: FC<ChatHistoryListProps> = ({
+  onChatSelect,
+  variant = "desktop",
+}) => {
   const [conversations] = useAtom(conversationsAtom);
   const [activeId, setActiveId] = useAtom(activeConversationIdAtom);
   const navigate = useNavigate();
@@ -27,17 +31,27 @@ const ChatHistoryList: FC<ChatHistoryListProps> = ({ onChatSelect }) => {
 
   return (
     <div className="p-2 bg-sidebar h-full">
-      <div className="flex justify-between items-center mb-2 px-2">
-        <h2 className="text-base py-2 font-semibold text-text-primary">
-          History
-        </h2>
-        <button
-          onClick={handleNewChat}
-          className="text-primary hover:text-primary/80"
-        >
-          <MessageCirclePlus className="h-5 w-5" />
-        </button>
-      </div>
+      {variant === "mobile" ? (
+        <div className="px-2 pt-1 pb-3">
+          <button
+            onClick={handleNewChat}
+            className="flex items-center justify-center w-full p-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+          >
+            <PlusCircle className="h-5 w-5 mr-2" />
+            <span className="font-semibold text-sm">New Chat</span>
+          </button>
+        </div>
+      ) : (
+        <div className="flex justify-between items-center mb-2 px-2">
+          <h2 className="text-base font-semibold text-text-primary">History</h2>
+          <button
+            onClick={handleNewChat}
+            className="text-primary hover:text-primary/80"
+          >
+            <PlusCircle className="h-5 w-5" />
+          </button>
+        </div>
+      )}
       <div className="space-y-2">
         {conversations.map((convo) => (
           <div
