@@ -47,7 +47,7 @@ const MobileLayout = () => {
     }`;
 
   return (
-    <div className="flex flex-col h-dvh bg-background overflow-hidden">
+    <div className="flex flex-col h-dvh bg-background">
       <AnimatePresence>
         {historyOpen && <MobileHistoryOverlay />}
       </AnimatePresence>
@@ -70,7 +70,7 @@ const MobileLayout = () => {
           </div>
         </header>
       )}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden">
+      <main className="flex-1 min-h-0">
         <Outlet />
       </main>
       <nav className="h-16 bg-sidebar border-t border-border flex flex-shrink-0">
