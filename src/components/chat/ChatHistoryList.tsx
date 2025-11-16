@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { conversationsAtom, activeConversationIdAtom } from "../../state/atoms";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle } from "lucide-react";
+import { MessageCirclePlus } from "lucide-react";
 import type { FC } from "react";
 
 interface ChatHistoryListProps {
@@ -28,12 +28,14 @@ const ChatHistoryList: FC<ChatHistoryListProps> = ({ onChatSelect }) => {
   return (
     <div className="p-2 bg-sidebar h-full">
       <div className="flex justify-between items-center mb-2 px-2">
-        <h2 className="text-base font-semibold text-text-primary">History</h2>
+        <h2 className="text-base py-2 font-semibold text-text-primary">
+          History
+        </h2>
         <button
           onClick={handleNewChat}
           className="text-primary hover:text-primary/80"
         >
-          <PlusCircle className="h-5 w-5" />
+          <MessageCirclePlus className="h-5 w-5" />
         </button>
       </div>
       <div className="space-y-2">

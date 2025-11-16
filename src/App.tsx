@@ -13,6 +13,7 @@ import ChatPage from "./pages/ChatPage";
 import MintHistory from "./pages/MintHistory";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ConnectWalletPage from "./pages/ConnectWalletPage";
 
 function App() {
   const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
@@ -23,7 +24,6 @@ function App() {
         {isDesktop ? (
           <Routes>
             <Route path="/" element={<DesktopLayout />}>
-              {/* All base paths redirect to the canonical new chat URL */}
               <Route index element={<Navigate to="/chat/new" replace />} />
               <Route
                 path="chat"
@@ -31,12 +31,12 @@ function App() {
               />
               <Route path="chat/:id" element={<ChatPage />} />
               <Route path="mint-history" element={<MintHistory />} />
+              <Route path="connect-wallet" element={<ConnectWalletPage />} />
             </Route>
           </Routes>
         ) : (
           <Routes>
             <Route path="/" element={<MobileLayout />}>
-              {/* Mobile also defaults to the new chat URL */}
               <Route index element={<Navigate to="/chat/new" replace />} />
               <Route
                 path="chat"
@@ -44,6 +44,7 @@ function App() {
               />
               <Route path="chat/:id" element={<ChatPage />} />
               <Route path="mint-history" element={<MintHistory />} />
+              <Route path="connect-wallet" element={<ConnectWalletPage />} />
             </Route>
           </Routes>
         )}

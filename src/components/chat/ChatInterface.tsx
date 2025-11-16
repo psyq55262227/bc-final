@@ -311,6 +311,7 @@ const ChatInterface = () => {
         timestamp: Date.now(),
       };
       setMintedHistory((prev) => [...prev, newMintInfo]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Mint failed:", error);
       toast.update(mintToastId, {
@@ -333,7 +334,6 @@ const ChatInterface = () => {
 
   useEffect(() => {
     if (isMobile) {
-      const newTitle = activeConvo?.title || "New Chat";
       const actions = (
         <HeaderActions
           onMint={handleMint}
@@ -341,24 +341,15 @@ const ChatInterface = () => {
           activeConvoExists={!!activeConvo}
         />
       );
-
-      setHeaderConfig({
-        title: (
-          <div className="flex items-center space-x-2">
-            <span className="truncate">{newTitle}</span>
-            <StatusDot isConnected={isConnected} />
-          </div>
-        ),
-        rightAction: actions,
-      });
+      setHeaderConfig((prev) => ({ ...prev, rightAction: actions }));
     }
 
     return () => {
       if (isMobile) {
-        setHeaderConfig({ title: "Chat dApp", rightAction: null });
+        setHeaderConfig((prev) => ({ ...prev, rightAction: null }));
       }
     };
-  }, [isMobile, activeConvo, setHeaderConfig, handleMint, isConnected]);
+  }, [isMobile, activeConvo, handleMint, setHeaderConfig]);
 
   const isAiTyping =
     activeConvo?.messages.some((m) => m.id === "ai_is_typing_placeholder") ??

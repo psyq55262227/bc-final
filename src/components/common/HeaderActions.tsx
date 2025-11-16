@@ -1,6 +1,5 @@
 import { useAtom } from "jotai";
 import { isWalletConnectedAtom, isMintingAtom } from "../../state/atoms";
-import ConnectWalletButton from "./ConnectWalletButton";
 import MintButton from "./MintButton";
 import { useMediaQuery } from "react-responsive";
 import type { FC } from "react";
@@ -22,7 +21,6 @@ const HeaderActions: FC<HeaderActionsProps> = ({
 
   return (
     <div className="flex items-center space-x-2">
-      {/* The Mint button only shows if a conversation is active */}
       {activeConvoExists && (
         <MintButton
           onClick={onMint}
@@ -32,8 +30,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
           isMobile={isMobile}
         />
       )}
-      {/* The Connect button always shows its current state */}
-      <ConnectWalletButton isMobile={isMobile} />
+      {/* <ConnectWalletButton isMobile={isMobile} /> */}
     </div>
   );
 };
