@@ -9,32 +9,47 @@ const initialConversations: Conversation[] = [
     id: "1",
     title: "Exploring RWA",
     messages: [
-      { role: "user", content: "What is RWA?", timestamp: now - 90000000 },
       {
+        id: "1-1",
+        role: "user",
+        content: "What is RWA?",
+        timestamp: now - 90000000,
+        isMinted: true,
+      },
+      {
+        id: "1-2",
         role: "assistant",
         content: "RWA stands for Real-World Asset...",
         timestamp: now - 80000000,
+        isMinted: true,
       },
-      { role: "user", content: "Hello, who are you?", timestamp: now - 200000 },
       {
+        id: "1-3",
+        role: "user",
+        content: "Hello, who are you?",
+        timestamp: now - 200000,
+      },
+      {
+        id: "1-4",
         role: "assistant",
         content: "I am an AI assistant.",
         timestamp: now - 190000,
       },
     ],
     timestamp: now - 200000,
-    isMinted: true,
   },
   {
     id: "2",
     title: "Future of AI",
     messages: [
       {
+        id: "2-1",
         role: "user",
         content: "What is the future of AI?",
         timestamp: now - 50000,
       },
       {
+        id: "2-2",
         role: "assistant",
         content: "The future of AI is vast and transformative...",
         timestamp: now - 40000,
@@ -42,14 +57,13 @@ const initialConversations: Conversation[] = [
     ],
     timestamp: now - 50000,
   },
-].map(({ messages, ...props }) => ({
-  ...props,
-  messages: messages.map((msg, id) => ({ ...msg, id: id.toString() })),
-}));
+];
 
 const initialMintedHistory: MintedInfo[] = [
   {
+    id: "mint-1",
     conversationId: "1",
+    messageIds: ["1-1", "1-2"],
     metadataUrl: "ipfs://Qm...",
     reward: 125.5,
     timestamp: Date.now() - 90000,
@@ -62,6 +76,8 @@ export const conversationsAtom = atomWithStorage<Conversation[]>(
 );
 
 export const activeConversationIdAtom = atom<string | null>(null);
+
+export const selectedMessageIdsAtom = atom<Set<string>>(new Set<string>());
 
 export const activeConversationAtom = atom<Conversation | undefined>((get) => {
   const conversations = get(conversationsAtom);

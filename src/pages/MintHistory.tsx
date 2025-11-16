@@ -61,7 +61,9 @@ const MintHistory = () => {
       : 0;
 
   const getConversationTitle = (id: string) => {
-    return conversations.find((c) => c.id === id)?.title || "Conversation";
+    return (
+      conversations.find((c) => c.id === id)?.title || "Deleted Conversation"
+    );
   };
 
   return (
@@ -116,18 +118,22 @@ const MintHistory = () => {
           {mintedHistory.length > 0 ? (
             mintedHistory.map((item) => (
               <motion.div
-                key={item.conversationId}
+                key={item.id}
                 className="bg-card p-4 rounded-lg border border-border flex justify-between items-center"
                 variants={itemVariants}
               >
                 <div className="flex items-center">
-                  <BotMessageSquare className="h-8 w-8 mr-4 text-text-secondary flex-shrink-0" />
+                  <BotMessageSquare className="h-8 w-8 mr-4 text-primary flex-shrink-0" />
                   <div className="flex-grow">
                     <Link
-                      to={`/chat/${item.conversationId}`}
+                      to={`/mint-history/${item.id}`}
                       className="font-semibold text-text-primary hover:underline"
                     >
-                      {getConversationTitle(item.conversationId)}
+                      {`Minted ${
+                        item.messageIds.length
+                      } messages from "${getConversationTitle(
+                        item.conversationId
+                      )}"`}
                     </Link>
                     <p className="text-sm text-text-secondary mt-1">
                       Minted on: {new Date(item.timestamp).toLocaleString()}
@@ -135,7 +141,7 @@ const MintHistory = () => {
                   </div>
                 </div>
                 <div className="text-right ml-4">
-                  <p className="font-bold text-lg text-green-600">
+                  <p className="font-bold text-lg text-primary">
                     +{item.reward.toFixed(2)}
                   </p>
                   <p className="text-sm text-text-secondary">Tokens</p>

@@ -43,7 +43,9 @@ const ChatHistoryList: FC<ChatHistoryListProps> = ({
         </div>
       ) : (
         <div className="flex justify-between items-center mb-2 px-2">
-          <h2 className="text-base font-semibold text-text-primary">History</h2>
+          <h2 className="text-base font-semibold text-text-primary py-2">
+            History
+          </h2>
           <button
             onClick={handleNewChat}
             className="text-primary hover:text-primary/80"

@@ -1,10 +1,8 @@
 import { Sparkles } from "lucide-react";
 import type { FC } from "react";
-
 interface MintButtonProps {
   onClick: () => void;
   isLoading: boolean;
-  isMinted: boolean;
   isDisabled: boolean;
   isMobile?: boolean;
 }
@@ -12,16 +10,15 @@ interface MintButtonProps {
 const MintButton: FC<MintButtonProps> = ({
   onClick,
   isLoading,
-  isMinted,
   isDisabled,
   isMobile = false,
 }) => {
-  const finalIsDisabled = isDisabled || isLoading || isMinted;
-  let buttonText = "Mint to NFT";
+  const finalIsDisabled = isDisabled || isLoading;
+  let buttonText = "Mint Selected";
   if (isLoading) buttonText = "Minting...";
-  if (isMinted) buttonText = "Minted";
 
-  const disabledTooltip = "Please connect your wallet first to enable minting.";
+  const disabledTooltip =
+    "Connect wallet and select one or more messages to mint.";
 
   const buttonContent = (
     <>
@@ -51,7 +48,7 @@ const MintButton: FC<MintButtonProps> = ({
       >
         {buttonContent}
       </button>
-      {isDisabled && !isLoading && !isMinted && (
+      {isDisabled && !isLoading && (
         <div
           className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs text-white bg-gray-700 rounded-md
                                invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity whitespace-nowrap z-10"

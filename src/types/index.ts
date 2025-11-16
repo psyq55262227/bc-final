@@ -5,6 +5,7 @@ export interface ChatMessage {
   role: string;
   content: string;
   timestamp: number;
+  isMinted?: boolean;
 }
 
 export interface Conversation {
@@ -12,11 +13,12 @@ export interface Conversation {
   title: string;
   messages: ChatMessage[];
   timestamp: number;
-  isMinted?: boolean;
 }
 
 export interface MintedInfo {
+  id: string;
   conversationId: string;
+  messageIds: string[];
   metadataUrl: string;
   reward: number;
   timestamp: number;

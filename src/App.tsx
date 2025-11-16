@@ -14,40 +14,29 @@ import MintHistory from "./pages/MintHistory";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ConnectWalletPage from "./pages/ConnectWalletPage";
+import MintedConversationViewer from "./pages/MintedConversationViewer";
 
 function App() {
   const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
 
+  const Layout = isDesktop ? DesktopLayout : MobileLayout;
+
   return (
     <>
       <Router>
-        {isDesktop ? (
-          <Routes>
-            <Route path="/" element={<DesktopLayout />}>
-              <Route index element={<Navigate to="/chat/new" replace />} />
-              <Route
-                path="chat"
-                element={<Navigate to="/chat/new" replace />}
-              />
-              <Route path="chat/:id" element={<ChatPage />} />
-              <Route path="mint-history" element={<MintHistory />} />
-              <Route path="connect-wallet" element={<ConnectWalletPage />} />
-            </Route>
-          </Routes>
-        ) : (
-          <Routes>
-            <Route path="/" element={<MobileLayout />}>
-              <Route index element={<Navigate to="/chat/new" replace />} />
-              <Route
-                path="chat"
-                element={<Navigate to="/chat/new" replace />}
-              />
-              <Route path="chat/:id" element={<ChatPage />} />
-              <Route path="mint-history" element={<MintHistory />} />
-              <Route path="connect-wallet" element={<ConnectWalletPage />} />
-            </Route>
-          </Routes>
-        )}
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Navigate to="/chat/new" replace />} />
+            <Route path="chat" element={<Navigate to="/chat/new" replace />} />
+            <Route path="chat/:id" element={<ChatPage />} />
+            <Route path="mint-history" element={<MintHistory />} />
+            <Route
+              path="mint-history/:id"
+              element={<MintedConversationViewer />}
+            />
+            <Route path="connect-wallet" element={<ConnectWalletPage />} />
+          </Route>
+        </Routes>
       </Router>
       <ToastContainer
         position="top-center"

@@ -28,7 +28,7 @@ export const mockApi = {
     if (Math.random() > 0.9) {
       throw new Error("Failed to upload metadata to IPFS.");
     }
-    console.log("Minting for user:", userAddress);
+    console.log(`Minting ${messages.length} messages for user:`, userAddress);
     return { metadataUrl: `ipfs://QmZ1a2b3c4d5e6f7g8h9i0j...${Date.now()}` };
   },
 };

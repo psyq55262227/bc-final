@@ -1,21 +1,20 @@
 import { useAtom } from "jotai";
-import { isWalletConnectedAtom, isMintingAtom } from "../../state/atoms";
+import { isMintingAtom } from "../../state/atoms";
 import MintButton from "./MintButton";
 import { useMediaQuery } from "react-responsive";
 import type { FC } from "react";
 
 interface HeaderActionsProps {
   onMint: () => void;
-  isMinted: boolean;
+  isSelectionEmpty: boolean;
   activeConvoExists: boolean;
 }
 
 const HeaderActions: FC<HeaderActionsProps> = ({
   onMint,
-  isMinted,
+  isSelectionEmpty,
   activeConvoExists,
 }) => {
-  const [isWalletConnected] = useAtom(isWalletConnectedAtom);
   const [isMinting] = useAtom(isMintingAtom);
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
@@ -25,12 +24,10 @@ const HeaderActions: FC<HeaderActionsProps> = ({
         <MintButton
           onClick={onMint}
           isLoading={isMinting}
-          isMinted={isMinted}
-          isDisabled={!isWalletConnected}
+          isDisabled={isMinting || isSelectionEmpty}
           isMobile={isMobile}
         />
       )}
-      {/* <ConnectWalletButton isMobile={isMobile} /> */}
     </div>
   );
 };
