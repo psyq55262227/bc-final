@@ -19,6 +19,8 @@ import { getChatReply, mintChat } from "../../api";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
 
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+
 import HeaderActions from "../common/HeaderActions";
 import StatusDot from "../common/StatusDot";
 import ConnectWalletModal from "../common/ConnectWalletModal";
@@ -94,9 +96,9 @@ const ChatBubble = ({
       animate={NEW_MESSAGE_ANIMATION.animate}
       transition={NEW_MESSAGE_ANIMATION.transition}
       style={{ transformOrigin: isUser ? "bottom right" : "bottom left" }}
-      className={`flex w-full items-start ${isMobile ? "" : "group"} ${
+      className={`flex w-full items-end ${isMobile ? "" : "group"} ${
         isUser ? "justify-end" : "justify-start"
-      } mb-2`}
+      } mb-4`}
     >
       {!isUser && <div className="mr-2">{checkbox}</div>}
       <div
@@ -128,7 +130,7 @@ const DateSeparator = ({
       initial={isInitialLoad ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="flex justify-center items-center my-4"
+      className="flex justify-center items-center my-6"
     >
       <hr className="w-full border-border" />
       <span className="px-2 text-xs text-text-secondary whitespace-nowrap">
@@ -209,6 +211,8 @@ const ChatInterface = () => {
   const prevMessageCountRef = useRef<number>(0);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { openConnectModal } = useConnectModal();
 
   useEffect(() => {
     setSelectedIds(new Set());
@@ -425,6 +429,8 @@ const ChatInterface = () => {
     );
     if (isMobile) {
       setHeaderConfig((prev) => ({ ...prev, rightAction: actions }));
+    } else {
+      setHeaderConfig((prev) => ({ ...prev, rightAction: null }));
     }
 
     return () => {
@@ -508,7 +514,7 @@ const ChatInterface = () => {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
             placeholder="Type your message..."
-            className="w-full p-3 pr-12 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-300 focus:border-indigo-300"
+            className="w-full p-3 pr-12 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/80"
           />
           <button
             onClick={handleSendMessage}
@@ -524,8 +530,10 @@ const ChatInterface = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={() => {
-          navigate("/connect-wallet");
           setIsModalOpen(false);
+          if (openConnectModal) {
+            openConnectModal();
+          }
         }}
       />
     </div>

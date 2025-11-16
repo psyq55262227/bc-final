@@ -13,11 +13,12 @@ import ChatPage from "./pages/ChatPage";
 import MintHistory from "./pages/MintHistory";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ConnectWalletPage from "./pages/ConnectWalletPage";
 import MintedConversationViewer from "./pages/MintedConversationViewer";
+import { useWallet } from "./hooks/useWallet";
 
 function App() {
   const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
+  useWallet();
 
   const Layout = isDesktop ? DesktopLayout : MobileLayout;
 
@@ -34,7 +35,6 @@ function App() {
               path="mint-history/:id"
               element={<MintedConversationViewer />}
             />
-            <Route path="connect-wallet" element={<ConnectWalletPage />} />
           </Route>
         </Routes>
       </Router>

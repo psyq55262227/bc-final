@@ -1,6 +1,6 @@
 import { Outlet, NavLink } from "react-router-dom";
 import ChatHistoryList from "../chat/ChatHistoryList";
-import { Award, MessageSquare, Wallet, BotMessageSquare } from "lucide-react";
+import { Award, MessageSquare, BotMessageSquare } from "lucide-react";
 
 const DesktopLayout = () => {
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -29,10 +29,6 @@ const DesktopLayout = () => {
           <NavLink to="/mint-history" className={navLinkClass}>
             <Award className="mr-2 h-6 w-4" />
             Mint Rewards
-          </NavLink>
-          <NavLink to="/connect-wallet" className={navLinkClass}>
-            <Wallet className="mr-2 h-6 w-4" />
-            Connect Wallet
           </NavLink>
         </nav>
         <div className="flex-1 overflow-y-auto custom-scrollbar">

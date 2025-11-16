@@ -32,7 +32,7 @@ const ChatHistoryList: FC<ChatHistoryListProps> = ({
   return (
     <div className="p-2 bg-sidebar h-full">
       {variant === "mobile" ? (
-        <div className="px-2 pt-1 pb-3">
+        <div className="p-2 pb-4">
           <button
             onClick={handleNewChat}
             className="flex items-center justify-center w-full p-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"

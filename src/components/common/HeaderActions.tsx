@@ -3,6 +3,7 @@ import { isMintingAtom } from "../../state/atoms";
 import MintButton from "./MintButton";
 import { useMediaQuery } from "react-responsive";
 import type { FC } from "react";
+import ConnectWalletButton from "./ConnectWalletButton";
 
 interface HeaderActionsProps {
   onMint: () => void;
@@ -28,6 +29,8 @@ const HeaderActions: FC<HeaderActionsProps> = ({
           isMobile={isMobile}
         />
       )}
+
+      <ConnectWalletButton isMobile={isMobile} />
     </div>
   );
 };

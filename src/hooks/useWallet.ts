@@ -1,70 +1,43 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect } from "react";
-import { useAtom } from "jotai";
+import { useAccount, useDisconnect } from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useSetAtom } from "jotai";
 import { userAddressAtom } from "../state/atoms";
-import { ethers } from "ethers";
+import { useEffect } from "react";
 import { toast } from "react-toastify";
 
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
-
 export const useWallet = () => {
-  const [address, setAddress] = useAtom(userAddressAtom);
+  const { address, isConnected, isDisconnected } = useAccount();
+  const { disconnect } = useDisconnect();
+  const setJotaiAddress = useSetAtom(userAddressAtom);
+
+  const { openConnectModal } = useConnectModal();
 
   useEffect(() => {
-    const handleAccountsChanged = (accounts: string[]) => {
-      if (accounts.length === 0) {
-        console.log("User disconnected");
-        setAddress(null);
-      } else {
-        setAddress(accounts[0]);
-      }
-    };
-
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", handleAccountsChanged);
+    if (isConnected && address) {
+      setJotaiAddress(address);
     }
-
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener(
-          "accountsChanged",
-          handleAccountsChanged
-        );
-      }
-    };
-  }, [setAddress]);
-
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      toast.error("MetaMask not detected. Please install it to continue.");
-      return;
+    if (isDisconnected) {
+      setJotaiAddress(null);
     }
+  }, [address, isConnected, isDisconnected, setJotaiAddress]);
 
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const accounts = await provider.send("eth_requestAccounts", []);
-      if (accounts.length > 0) {
-        setAddress(accounts[0]);
-        toast.success("Wallet connected successfully!");
-      }
-    } catch (error: any) {
-      console.error("Failed to connect wallet:", error);
-      if (error.code === 4001) {
-        toast.warn("You rejected the wallet connection request.");
-      } else {
-        toast.error("Failed to connect wallet.");
-      }
+  const connectWallet = () => {
+    if (openConnectModal) {
+      openConnectModal();
+    } else {
+      toast.error("Connect modal is not ready yet.");
     }
   };
 
   const disconnectWallet = () => {
-    setAddress(null);
+    disconnect();
     toast.info("Wallet disconnected.");
   };
 
-  return { address, connectWallet, disconnectWallet };
+  return {
+    address,
+    isConnected,
+    connectWallet,
+    disconnectWallet,
+  };
 };
