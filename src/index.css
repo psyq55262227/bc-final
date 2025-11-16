@@ -40,5 +40,5 @@
 html,
 body {
   max-height: 100dvh;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
