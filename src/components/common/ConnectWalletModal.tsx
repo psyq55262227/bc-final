@@ -26,7 +26,7 @@ const ConnectWalletModal: FC<ConnectWalletModalProps> = ({
           />
 
           <motion.div
-            className="relative w-full max-w-sm p-6 bg-card rounded-xl border border-border shadow-lg"
+            className="relative w-full max-w-sm p-6 bg-white rounded-xl border border-border shadow-lg"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
