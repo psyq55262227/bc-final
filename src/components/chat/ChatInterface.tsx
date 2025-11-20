@@ -12,15 +12,13 @@ import {
   selectedMessageIdsAtom,
 } from "../../state/atoms";
 import { motion } from "framer-motion";
-import { Bot, Send } from "lucide-react";
+import { Bot, Send, Paperclip } from "lucide-react";
 import type { ChatMessage, Conversation } from "../../types";
 import { useNavigate } from "react-router-dom";
 import { getChatReply, mintChat } from "../../api";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
-
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-
 import HeaderActions from "../common/HeaderActions";
 import StatusDot from "../common/StatusDot";
 import ConnectWalletModal from "../common/ConnectWalletModal";
@@ -47,16 +45,9 @@ const formatDateSeparator = (timestamp: number) => {
   });
 };
 
-const NEW_MESSAGE_ANIMATION = {
-  initial: { opacity: 0, scale: 0.8, y: 10 },
-  animate: { opacity: 1, scale: 1, y: 0 },
-  transition: { duration: 0.3 },
-};
-
 const ChatBubble = ({
   message,
   isUser,
-  isInitialLoad,
   onSelect,
   isSelected,
   isMobile,
@@ -68,128 +59,94 @@ const ChatBubble = ({
   isSelected: boolean;
   isMobile: boolean;
 }) => {
-  const checkmarkIcon = `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")`;
-
   const checkbox = (
-    <input
-      type="checkbox"
+    <div
+      onClick={() => !message.isMinted && onSelect(message.id)}
       className={`
-        appearance-none shrink-0 h-4 w-4 rounded border border-gray-300 bg-white mt-2 cursor-pointer
-        transition-all duration-200
-        checked:bg-primary checked:border-primary
-        checked:bg-[length:100%_100%] checked:bg-no-repeat checked:bg-center
-        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary
-        disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-200
+        flex-shrink-0 h-4 w-4 rounded-full border flex items-center justify-center transition-all mr-2 mt-1 p-0.5
+        ${
+          message.isMinted
+            ? "border-gray-300 bg-transparent cursor-not-allowed"
+            : isSelected
+            ? "border-primary bg-primary cursor-pointer"
+            : "border-gray-300 bg-transparent hover:border-primary cursor-pointer"
+        }
       `}
-      style={{ backgroundImage: isSelected ? checkmarkIcon : "none" }}
-      checked={isSelected}
-      disabled={message.isMinted}
-      onChange={() => onSelect(message.id)}
-      aria-label={`Select message: ${message.content}`}
-    />
+    >
+      {message.isMinted ? (
+        <div className="h-full w-full bg-gray-300 rounded-full" />
+      ) : isSelected ? (
+        <div className="h-1.5 w-1.5 bg-white rounded-full" />
+      ) : null}
+    </div>
   );
+  const timestampClass = isMobile
+    ? "opacity-100"
+    : "opacity-0 group-hover:opacity-100";
 
   return (
     <motion.div
       layout
-      initial={isInitialLoad ? false : NEW_MESSAGE_ANIMATION.initial}
-      animate={NEW_MESSAGE_ANIMATION.animate}
-      transition={NEW_MESSAGE_ANIMATION.transition}
-      style={{ transformOrigin: isUser ? "bottom right" : "bottom left" }}
-      className={`flex w-full items-end ${isMobile ? "" : "group"} ${
-        isUser ? "justify-end" : "justify-start"
-      } mb-4`}
-    >
-      {!isUser && <div className="mr-2">{checkbox}</div>}
-      <div
-        className={`max-w-md p-3 rounded-xl ${
-          isUser ? "rounded-br-none" : "rounded-bl-none"
-        } ${
-          isUser
-            ? "bg-user-bubble text-white"
-            : "bg-assistant-bubble text-text-primary"
-        }`}
-      >
-        {message.content}
-      </div>
-      {isUser && <div className="ml-2">{checkbox}</div>}
-    </motion.div>
-  );
-};
-
-const DateSeparator = ({
-  timestamp,
-  isInitialLoad,
-}: {
-  timestamp: number;
-  isInitialLoad: boolean;
-}) => {
-  return (
-    <motion.div
-      layout
-      initial={isInitialLoad ? false : { opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="flex justify-center items-center my-6"
-    >
-      <hr className="w-full border-border" />
-      <span className="px-2 text-xs text-text-secondary whitespace-nowrap">
-        {formatDateSeparator(timestamp)}
-      </span>
-      <hr className="w-full border-border" />
-    </motion.div>
-  );
-};
-
-const NewChatPlaceholder = () => (
-  <div className="flex flex-col items-center justify-center h-full text-center">
-    <Bot size={48} className="text-gray-300 mb-4" />
-    <h2 className="text-xl font-semibold text-text-primary">
-      Start a new conversation
-    </h2>
-    <p className="text-text-secondary">
-      Select messages to mint them as assets.
-    </p>
-  </div>
-);
-
-const TypingIndicator = () => {
-  return (
-    <motion.div
-      className="flex items-center space-x-1.5 p-3"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      className={`flex w-full mb-3 group ${
+        isUser ? "justify-end" : "justify-start"
+      }`}
     >
-      <span className="text-sm text-text-secondary">AI is typing</span>
-      <motion.div
-        className="w-1.s5 h-1.5 bg-gray-400 rounded-full"
-        animate={{ y: [0, -2, 0] }}
-        transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="w-1.5 h-1.5 bg-gray-400 rounded-full"
-        animate={{ y: [0, -2, 0] }}
-        transition={{
-          duration: 0.8,
-          delay: 0.1,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="w-1.5 h-1.5 bg-gray-400 rounded-full"
-        animate={{ y: [0, -2, 0] }}
-        transition={{
-          duration: 0.8,
-          delay: 0.2,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+      {!isUser && <div className="mt-1">{checkbox}</div>}
+
+      <div
+        className={`flex flex-col max-w-[85%] md:max-w-[70%] ${
+          isUser ? "items-end" : "items-start"
+        }`}
+      >
+        <div
+          className={`
+            relative px-4 py-2.5 text-sm leading-relaxed
+            ${
+              isUser
+                ? "bg-primary text-white rounded-2xl rounded-tr-sm"
+                : "bg-assistant-bubble text-text-primary border border-gray-200/60 rounded-2xl rounded-tl-sm"
+            }
+          `}
+        >
+          {message.content}
+        </div>
+        <span
+          className={`text-[10px] text-gray-400 mt-0.5 px-1 transition-opacity select-none ${timestampClass}`}
+        >
+          {new Date(message.timestamp).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </span>
+      </div>
+
+      {isUser && <div className="mt-1 ml-2">{checkbox}</div>}
     </motion.div>
   );
 };
+
+const TypingIndicator = () => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    className="flex items-center space-x-1 px-4 py-3 bg-white border border-gray-200/60 rounded-2xl rounded-tl-sm w-fit mb-3 ml-6"
+  >
+    <div
+      className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+      style={{ animationDelay: "0s" }}
+    />
+    <div
+      className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+      style={{ animationDelay: "0.2s" }}
+    />
+    <div
+      className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+      style={{ animationDelay: "0.4s" }}
+    />
+  </motion.div>
+);
 
 const ChatInterface = () => {
   const [activeConvo] = useAtom(activeConversationAtom);
@@ -201,23 +158,19 @@ const ChatInterface = () => {
   const userAddress = useAtomValue(userAddressAtom);
   const setHeaderConfig = useSetAtom(headerConfigAtom);
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
-
   const [selectedIds, setSelectedIds] = useAtom(selectedMessageIdsAtom);
-
   const [inputValue, setInputValue] = useState("");
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const prevMessageCountRef = useRef<number>(0);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const { openConnectModal } = useConnectModal();
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   useEffect(() => {
     setSelectedIds(new Set());
   }, [activeId, setSelectedIds]);
-
   useEffect(() => {
     if (activeConvo) {
       setIsInitialLoad(true);
@@ -226,7 +179,6 @@ const ChatInterface = () => {
       return () => clearTimeout(timer);
     }
   }, [activeConvo?.id]);
-
   useEffect(() => {
     if (
       activeConvo &&
@@ -242,7 +194,6 @@ const ChatInterface = () => {
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
-
     const TYPING_ID = "ai_is_typing_placeholder";
     const userMessage: ChatMessage = {
       id: self.crypto.randomUUID(),
@@ -256,13 +207,11 @@ const ChatInterface = () => {
       content: "...",
       timestamp: Date.now(),
     };
-
     const currentInput = inputValue;
     setInputValue("");
-
+    setIsInputFocused(false);
     let conversationToUpdateId: string;
     let messagesForApi: ChatMessage[];
-
     if (!activeId) {
       const newConversation: Conversation = {
         id: Date.now().toString(),
@@ -285,7 +234,6 @@ const ChatInterface = () => {
       );
       conversationToUpdateId = activeId;
     }
-
     try {
       const { reply } = await getChatReply(messagesForApi);
       const aiMessage: ChatMessage = {
@@ -294,30 +242,27 @@ const ChatInterface = () => {
         content: reply,
         timestamp: Date.now(),
       };
-
       setConversations((prev) =>
         prev.map((c) => {
-          if (c.id === conversationToUpdateId) {
+          if (c.id === conversationToUpdateId)
             return {
               ...c,
               messages: c.messages.map((m) =>
                 m.id === TYPING_ID ? aiMessage : m
               ),
             };
-          }
           return c;
         })
       );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error("Failed to get AI reply:", error);
       setConversations((prev) =>
         prev.map((c) => {
-          if (c.id === conversationToUpdateId) {
+          if (c.id === conversationToUpdateId)
             return {
               ...c,
               messages: c.messages.filter((m) => m.id !== TYPING_ID),
             };
-          }
           return c;
         })
       );
@@ -327,11 +272,8 @@ const ChatInterface = () => {
   const handleToggleMessageSelection = (messageId: string) => {
     setSelectedIds((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(messageId)) {
-        newSet.delete(messageId);
-      } else {
-        newSet.add(messageId);
-      }
+      if (newSet.has(messageId)) newSet.delete(messageId);
+      else newSet.add(messageId);
       return newSet;
     });
   };
@@ -339,31 +281,23 @@ const ChatInterface = () => {
   const handleMint = useCallback(async () => {
     if (!activeConvo || selectedIds.size === 0 || isMinting || !userAddress)
       return;
-
     const messagesToMint = activeConvo.messages.filter(
       (m) => selectedIds.has(m.id) && !m.isMinted
     );
-
     if (messagesToMint.length === 0) {
       toast.info("All selected messages have already been minted.");
       return;
     }
-
     setIsMinting(true);
-    const mintToastId = toast.loading(
-      `Minting ${messagesToMint.length} message(s)...`
-    );
-
+    const mintToastId = toast.loading(`Minting...`);
     try {
       const { metadataUrl } = await mintChat(messagesToMint, userAddress);
-
       toast.update(mintToastId, {
         render: "Mint successful!",
         type: "success",
         isLoading: false,
         autoClose: 5000,
       });
-
       setConversations((prev) =>
         prev.map((c) =>
           c.id === activeConvo.id
@@ -376,7 +310,6 @@ const ChatInterface = () => {
             : c
         )
       );
-
       const newMintInfo = {
         id: `mint-${self.crypto.randomUUID()}`,
         conversationId: activeConvo.id,
@@ -386,11 +319,9 @@ const ChatInterface = () => {
         timestamp: Date.now(),
       };
       setMintedHistory((prev) => [newMintInfo, ...prev]);
-
       setSelectedIds(new Set());
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("Mint failed:", error);
       toast.update(mintToastId, {
         render: `Mint failed: ${error.message}`,
         type: "error",
@@ -412,11 +343,8 @@ const ChatInterface = () => {
   ]);
 
   const handleMintClick = useCallback(() => {
-    if (isConnected) {
-      handleMint();
-    } else {
-      setIsModalOpen(true);
-    }
+    if (isConnected) handleMint();
+    else setIsModalOpen(true);
   }, [handleMint, isConnected]);
 
   useEffect(() => {
@@ -427,16 +355,11 @@ const ChatInterface = () => {
         activeConvoExists={!!activeConvo}
       />
     );
-    if (isMobile) {
+    if (isMobile)
       setHeaderConfig((prev) => ({ ...prev, rightAction: actions }));
-    } else {
-      setHeaderConfig((prev) => ({ ...prev, rightAction: null }));
-    }
-
+    else setHeaderConfig((prev) => ({ ...prev, rightAction: null }));
     return () => {
-      if (isMobile) {
-        setHeaderConfig((prev) => ({ ...prev, rightAction: null }));
-      }
+      if (isMobile) setHeaderConfig((prev) => ({ ...prev, rightAction: null }));
     };
   }, [isMobile, activeConvo, handleMintClick, setHeaderConfig, selectedIds]);
 
@@ -445,11 +368,11 @@ const ChatInterface = () => {
     false;
 
   return (
-    <div className="flex flex-col h-full bg-card">
+    <div className="flex flex-col h-full w-full relative bg-chat-bg md:rounded-[var(--radius-card)] overflow-hidden">
       {!isMobile && (
-        <header className="p-4 border-b border-border flex justify-between items-center flex-shrink-0">
-          <h1 className="text-lg font-bold text-text-primary flex items-center space-x-2">
-            <span>{activeConvo?.title || "New Chat"}</span>
+        <header className="px-6 py-3 flex justify-between items-center flex-shrink-0 bg-transparent">
+          <h1 className="text-base font-semibold text-text-primary flex items-center space-x-2">
+            <span>{activeConvo?.title || "New Conversation"}</span>
             <StatusDot isConnected={isConnected} />
           </h1>
           <HeaderActions
@@ -460,69 +383,118 @@ const ChatInterface = () => {
         </header>
       )}
 
-      <main className="flex-1 p-4 overflow-y-auto custom-scrollbar flex flex-col min-w-0">
+      <main
+        className="flex-1 overflow-y-auto custom-scrollbar px-4 py-2 flex flex-col"
+        onClick={() => setIsInputFocused(false)}
+      >
         {!activeConvo ? (
-          <NewChatPlaceholder />
-        ) : (
-          <div
-            className="mt-auto w-full"
-            style={{ opacity: isInitialLoad ? 0 : 1 }}
-          >
-            <div key={activeConvo.id}>
-              {activeConvo.messages.map((msg, index) => {
-                const prevMsg = activeConvo.messages[index - 1];
-                const showSeparator =
-                  index === 0 ||
-                  !isSameDay(
-                    new Date(msg.timestamp),
-                    new Date(prevMsg.timestamp)
-                  );
-
-                if (msg.id === "ai_is_typing_placeholder") {
-                  return <TypingIndicator key={msg.id} />;
-                }
-
-                return (
-                  <div key={msg.id}>
-                    {showSeparator && (
-                      <DateSeparator
-                        timestamp={msg.timestamp}
-                        isInitialLoad={isInitialLoad}
-                      />
-                    )}
-                    <ChatBubble
-                      message={msg}
-                      isUser={msg.role === "user"}
-                      isInitialLoad={isInitialLoad}
-                      isSelected={selectedIds.has(msg.id)}
-                      onSelect={handleToggleMessageSelection}
-                      isMobile={isMobile}
-                    />
-                  </div>
-                );
-              })}
+          <div className="flex flex-col items-center justify-center h-full text-center opacity-40">
+            <div className="bg-white p-4 rounded-2xl mb-4 border border-gray-200">
+              <Bot size={32} className="text-gray-400" />
             </div>
+            <h2 className="text-base font-medium text-text-primary">
+              Start a new chat
+            </h2>
+          </div>
+        ) : (
+          <div className="w-full max-w-3xl mx-auto mt-auto">
+            {activeConvo.messages.map((msg, index) => {
+              const prevMsg = activeConvo.messages[index - 1];
+              const showSeparator =
+                index === 0 ||
+                !isSameDay(
+                  new Date(msg.timestamp),
+                  new Date(prevMsg.timestamp)
+                );
+
+              if (msg.id === "ai_is_typing_placeholder")
+                return <TypingIndicator key={msg.id} />;
+
+              return (
+                <div key={msg.id}>
+                  {showSeparator && (
+                    <div className="flex items-center my-4 opacity-40">
+                      <div className="h-px bg-gray-300 flex-1" />
+                      <span className="px-2 text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                        {formatDateSeparator(msg.timestamp)}
+                      </span>
+                      <div className="h-px bg-gray-300 flex-1" />
+                    </div>
+                  )}
+                  <ChatBubble
+                    message={msg}
+                    isUser={msg.role === "user"}
+                    isInitialLoad={isInitialLoad}
+                    isSelected={selectedIds.has(msg.id)}
+                    onSelect={handleToggleMessageSelection}
+                    isMobile={isMobile}
+                  />
+                </div>
+              );
+            })}
+            <div ref={messagesEndRef} className="h-1" />
           </div>
         )}
-        <div ref={messagesEndRef} />
       </main>
-      <footer className="p-4 border-t border-border flex-shrink-0">
-        <div className="relative">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-            placeholder="Type your message..."
-            className="w-full p-3 pr-12 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/80"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-primary disabled:text-gray-400"
-            disabled={isAiTyping || !inputValue}
+
+      <footer className="p-3 md:p-4 flex-shrink-0 z-20">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            layout
+            initial={{ borderRadius: 20, backgroundColor: "#ffffff" }}
+            animate={{
+              borderRadius: 20,
+              backgroundColor: "#ffffff",
+            }}
+            className={`relative border transition-colors duration-200 bg-white ${
+              isInputFocused ? "border-primary" : "border-gray-200"
+            }`}
           >
-            <Send className="h-5 w-5" />
-          </button>
+            <div className="flex flex-col p-1">
+              <div className="flex items-end">
+                <button className="p-2 text-gray-400 hover:text-primary transition-colors hidden md:block">
+                  <Paperclip size={18} />
+                </button>
+
+                <textarea
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onFocus={() => setIsInputFocused(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
+                  placeholder="Message..."
+                  className={`
+                    w-full bg-transparent border-none focus:ring-0 resize-none py-2.5 px-2 text-sm text-text-primary placeholder-gray-400
+                    no-scrollbar leading-relaxed
+                  `}
+                  style={{
+                    minHeight: "40px",
+                    height: isInputFocused ? "100px" : "40px",
+                    transition: "height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                  }}
+                />
+
+                <button
+                  onClick={handleSendMessage}
+                  disabled={isAiTyping || !inputValue}
+                  className={`
+                    p-1.5 rounded-lg mb-1 mr-1 transition-all duration-200 flex-shrink-0
+                    ${
+                      inputValue
+                        ? "bg-primary text-white hover:bg-primary-dark"
+                        : "bg-gray-100 text-gray-300 cursor-not-allowed"
+                    }
+                  `}
+                >
+                  <Send className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </footer>
 
@@ -531,9 +503,7 @@ const ChatInterface = () => {
         onClose={() => setIsModalOpen(false)}
         onConfirm={() => {
           setIsModalOpen(false);
-          if (openConnectModal) {
-            openConnectModal();
-          }
+          if (openConnectModal) openConnectModal();
         }}
       />
     </div>

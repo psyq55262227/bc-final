@@ -20,7 +20,6 @@ const MobileLayout = () => {
 
   useEffect(() => {
     let newTitle: string;
-
     if (isChatPage) {
       if (location.pathname === "/chat/new") {
         newTitle = "New Chat";
@@ -29,41 +28,38 @@ const MobileLayout = () => {
       }
     } else if (location.pathname.startsWith("/mint-history")) {
       const pathSegments = location.pathname.split("/").filter(Boolean);
-      if (pathSegments.length > 1) {
-        newTitle = "";
-      } else {
-        newTitle = "Rewards";
-      }
+      if (pathSegments.length > 1) newTitle = "";
+      else newTitle = "Rewards";
     } else {
       newTitle = "Chat as Assets";
     }
-
     setHeaderConfig((prev) => ({ ...prev, title: newTitle }));
   }, [location.pathname, activeConversation, setHeaderConfig, isChatPage]);
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex flex-col items-center justify-center flex-1 p-2 text-sm ${
-      isActive ? "text-primary" : "text-text-secondary"
+    `flex flex-col items-center justify-center flex-1 py-2 text-xs font-medium transition-colors ${
+      isActive ? "text-primary" : "text-text-secondary hover:text-text-primary"
     }`;
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] h-dvh bg-background overflow-hidden">
+    <div className="flex flex-col h-dvh w-full bg-background overflow-hidden">
       <AnimatePresence>
         {historyOpen && <MobileHistoryOverlay />}
       </AnimatePresence>
 
-      {/* Header (第一行) */}
       {headerConfig.title && (
-        <header className="h-16 flex items-center justify-between p-4 bg-sidebar border-b border-border flex-shrink-0">
-          {/* ... Header 内部代码不变 ... */}
+        <header className="h-14 flex items-center justify-between px-4 bg-background/80 backdrop-blur-md sticky top-0 z-20 flex-shrink-0">
           <div className="w-[40px]">
             {isChatPage && (
-              <button onClick={() => setHistoryOpen(true)} className="p-1">
-                <Menu size={24} />
+              <button
+                onClick={() => setHistoryOpen(true)}
+                className="p-2 -ml-2 rounded-full hover:bg-gray-200/50 text-text-primary"
+              >
+                <Menu size={20} />
               </button>
             )}
           </div>
-          <h1 className="text-lg font-semibold truncate">
+          <h1 className="text-base font-bold text-text-primary truncate">
             {headerConfig.title}
           </h1>
           <div className="flex justify-end min-w-[40px]">
@@ -72,18 +68,42 @@ const MobileLayout = () => {
         </header>
       )}
 
-      <main className="overflow-y-auto">
+      <main className="flex-1 relative overflow-hidden flex flex-col w-full">
         <Outlet />
       </main>
 
-      <nav className="h-16 bg-sidebar border-t border-border flex flex-shrink-0">
+      <nav className="h-[60px] bg-white border-t border-border flex flex-shrink-0 z-30 pb-safe">
         <NavLink to="/chat/new" className={navLinkClass}>
-          <MessageSquare className="h-6 w-6 mb-1" />
-          Chat
+          <div
+            className={`p-1.5 rounded-xl mb-0.5 ${
+              location.pathname.startsWith("/chat") ? "bg-primary/10" : ""
+            }`}
+          >
+            <MessageSquare
+              className={`h-5 w-5 ${
+                location.pathname.startsWith("/chat") ? "fill-current" : ""
+              }`}
+            />
+          </div>
+          <span>Chat</span>
         </NavLink>
         <NavLink to="/mint-history" className={navLinkClass}>
-          <Award className="h-6 w-6 mb-1" />
-          Rewards
+          <div
+            className={`p-1.5 rounded-xl mb-0.5 ${
+              location.pathname.startsWith("/mint-history")
+                ? "bg-primary/10"
+                : ""
+            }`}
+          >
+            <Award
+              className={`h-5 w-5 ${
+                location.pathname.startsWith("/mint-history")
+                  ? "fill-current"
+                  : ""
+              }`}
+            />
+          </div>
+          <span>Rewards</span>
         </NavLink>
       </nav>
     </div>

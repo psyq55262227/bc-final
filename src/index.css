@@ -1,39 +1,47 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
-
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #00a389; /* 主要按钮和高亮颜色 */
-  --color-background: #f8f9fa; /* 页面背景色 */
-  --color-sidebar: #ffffff; /* 侧边栏/列表背景色 */
-  --color-card: #ffffff; /* 卡片背景色 */
-  --color-text-primary: #1f2937; /* 主要文本颜色 */
-  --color-text-secondary: #6b7280; /* 次要文本颜色 */
-  --color-border: #e5e7eb; /* 边框颜色 */
-  --color-user-bubble: #00a389; /* 用户聊天气泡 */
-  --color-assistant-bubble: #e5e7eb; /* AI 聊天气泡 */
+  --color-primary: #00b894;
+  --color-primary-dark: #00a389;
+  --color-background: #ffffff; /* 全局背景纯白 */
+  --color-chat-bg: #f4f4f5; /* 聊天卡片的浅灰色背景 */
+  --color-sidebar: #ffffff;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-border: #e2e8f0;
+
+  /* 气泡颜色 */
+  --color-user-bubble: #00b894;
+  --color-assistant-bubble: #ffffff;
 
   --font-sans: "Inter", "sans-serif";
+  --radius-card: 1.5rem;
 }
 
 @layer utilities {
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #cccccc;
-    border-radius: 3px;
+    background: #cbd5e1;
+    border-radius: 10px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #aaaaaa;
+    background: #94a3b8;
   }
-  .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: #cccccc transparent;
+
+  /* 完全隐藏滚动条但允许滚动 (用于输入框) */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 
@@ -44,5 +52,14 @@ body,
   width: 100%;
   margin: 0;
   padding: 0;
+  background-color: var(--color-background);
   overflow: hidden;
+  font-family: var(--font-sans);
+}
+
+/* 去除输入框聚焦时的默认黑线 */
+input:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: none;
 }

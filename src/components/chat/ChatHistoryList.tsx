@@ -1,17 +1,20 @@
 import { useAtom } from "jotai";
 import { conversationsAtom, activeConversationIdAtom } from "../../state/atoms";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle } from "lucide-react";
+import { Plus } from "lucide-react";
 import type { FC } from "react";
+import { motion } from "framer-motion";
 
 interface ChatHistoryListProps {
   onChatSelect?: () => void;
   variant?: "desktop" | "mobile";
+  paddingClass?: string;
 }
 
 const ChatHistoryList: FC<ChatHistoryListProps> = ({
   onChatSelect,
   variant = "desktop",
+  paddingClass = "p-3",
 }) => {
   const [conversations] = useAtom(conversationsAtom);
   const [activeId, setActiveId] = useAtom(activeConversationIdAtom);
@@ -30,47 +33,60 @@ const ChatHistoryList: FC<ChatHistoryListProps> = ({
   };
 
   return (
-    <div className="p-2 bg-sidebar h-full">
-      {variant === "mobile" ? (
-        <div className="p-2 pb-4">
+    <div className="flex flex-col h-full">
+      {variant === "mobile" && (
+        <div className="mb-4 px-4 pt-2">
           <button
             onClick={handleNewChat}
-            className="flex items-center justify-center w-full p-2.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+            className="w-full flex items-center justify-center py-2 bg-primary text-white rounded-xl font-semibold active:scale-95 transition-transform border border-transparent"
           >
-            <PlusCircle className="h-5 w-5 mr-2" />
-            <span className="font-semibold text-sm">New Chat</span>
-          </button>
-        </div>
-      ) : (
-        <div className="flex justify-between items-center mb-2 px-2">
-          <h2 className="text-base font-semibold text-text-primary py-2">
-            History
-          </h2>
-          <button
-            onClick={handleNewChat}
-            className="text-primary hover:text-primary/80"
-          >
-            <PlusCircle className="h-5 w-5" />
+            <Plus className="h-5 w-5 mr-2" />
+            New Chat
           </button>
         </div>
       )}
-      <div className="space-y-2">
-        {conversations.map((convo) => (
-          <div
-            key={convo.id}
-            onClick={() => handleSelectChat(convo.id)}
-            className={`p-3 rounded-lg cursor-pointer ${
-              activeId === convo.id ? "bg-gray-100" : "hover:bg-gray-100"
-            }`}
-          >
-            <p className="font-medium text-sm text-text-primary truncate">
-              {convo.title}
-            </p>
-            <p className="text-xs text-text-secondary truncate mt-1">
-              {convo.messages[convo.messages.length - 1].content}
-            </p>
+
+      <div className="flex-1 space-y-1 overflow-y-auto custom-scrollbar">
+        {conversations.length === 0 && (
+          <div className="text-center py-10 text-gray-400 text-sm">
+            No conversations yet.
           </div>
-        ))}
+        )}
+        {conversations.map((convo, index) => {
+          const isActive = activeId === convo.id;
+          return (
+            <motion.div
+              key={convo.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
+              onClick={() => handleSelectChat(convo.id)}
+              className={`
+                  cursor-pointer transition-colors duration-200 rounded-lg group
+                  ${paddingClass}
+                  ${
+                    isActive
+                      ? "bg-gray-200/60 text-text-primary"
+                      : "hover:bg-gray-100 text-text-secondary hover:text-text-primary"
+                  }
+                `}
+            >
+              <div className="flex flex-col">
+                <h3
+                  className={`text-sm font-medium truncate ${
+                    isActive ? "font-semibold" : ""
+                  }`}
+                >
+                  {convo.title || "New Conversation"}
+                </h3>
+                <p className="text-xs text-gray-400 truncate mt-0.5 opacity-80 group-hover:opacity-100">
+                  {convo.messages[convo.messages.length - 1]?.content ||
+                    "Empty"}
+                </p>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );

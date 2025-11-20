@@ -13,27 +13,17 @@ interface StatCardProps {
   icon: ReactNode;
   title: string;
   value: string;
-  bgColor: string;
-  textColor: string;
+  colorClass: string;
 }
 
-const StatCard: FC<StatCardProps> = ({
-  icon,
-  title,
-  value,
-  bgColor,
-  textColor,
-}) => (
+const StatCard: FC<StatCardProps> = ({ icon, title, value, colorClass }) => (
   <div
-    className={`p-4 rounded-xl flex flex-col items-center justify-center text-center space-y-2 
-                md:flex-row md:space-y-0 md:space-x-4 md:text-left md:justify-start ${bgColor} ${textColor}`}
+    className={`p-4 rounded-xl border flex flex-col md:flex-row items-center space-y-2 md:space-x-4 md:space-y-0 ${colorClass}`}
   >
-    <div className="flex-shrink-0">{icon}</div>
-    <div>
-      <p className="text-2xl font-bold">{value}</p>
-      <p className="text-xs font-medium opacity-70 whitespace-nowrap">
-        {title}
-      </p>
+    <div className="p-2 rounded-lg bg-white/50">{icon}</div>
+    <div className="flex flex-col items-center md:items-start">
+      <p className="text-2xl font-bold leading-none">{value}</p>
+      <p className="text-xs font-medium opacity-80 mt-1">{title}</p>
     </div>
   </div>
 );
@@ -69,82 +59,84 @@ const MintHistory = () => {
 
   return (
     <motion.div
-      className="p-4 md:p-8 h-full bg-background text-text-primary overflow-y-auto custom-scrollbar"
+      className="p-4 md:p-8 h-full w-full overflow-y-auto custom-scrollbar bg-chat-bg"
       initial={{ opacity: 0 }}
       animate={{ opacity: isHydrated ? 1 : 0 }}
       transition={{ duration: 0.3 }}
     >
       <header className="mb-8 hidden md:block">
-        <h1 className="text-3xl font-bold mb-2">Mint Rewards</h1>
-        <p className="text-text-secondary">
-          Here is a summary of your rewards from minting conversations.
+        <h1 className="text-2xl font-bold text-text-primary mb-1">
+          Mint Rewards
+        </h1>
+        <p className="text-text-secondary text-sm">
+          Overview of your tokenized conversation assets.
         </p>
       </header>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
         <StatCard
           icon={<Award className="h-6 w-6 md:h-8 md:w-8" />}
-          title="Total Rewards"
+          title="Total Earned"
           value={`${totalRewards.toFixed(2)}`}
-          bgColor="bg-blue-100"
-          textColor="text-blue-800"
+          colorClass="bg-blue-50 border-blue-100 text-blue-700"
         />
         <StatCard
           icon={<Package className="h-6 w-6 md:h-8 md:w-8" />}
           title="Total Mints"
           value={totalMints.toString()}
-          bgColor="bg-slate-200"
-          textColor="text-slate-800"
+          colorClass="bg-purple-50 border-purple-100 text-purple-700"
         />
         <StatCard
           icon={<TrendingUp className="h-6 w-6 md:h-8 md:w-8" />}
-          title="Highest Reward"
+          title="Best Reward"
           value={`${highestReward.toFixed(2)}`}
-          bgColor="bg-amber-100"
-          textColor="text-amber-800"
+          colorClass="bg-amber-50 border-amber-100 text-amber-700"
         />
       </div>
 
       <div>
-        <h2 className="text-xl font-bold mb-4">Minting History</h2>
+        <h2 className="text-lg font-bold text-text-primary mb-4">
+          Recent Activity
+        </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {isHydrated &&
             (validMintedHistory.length > 0 ? (
-              validMintedHistory.map((item) => (
-                <div
+              validMintedHistory.map((item, index) => (
+                <motion.div
                   key={item.id}
-                  className="bg-card p-4 rounded-lg border border-border flex justify-between items-center"
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-white p-4 rounded-xl border border-gray-200 flex justify-between items-center hover:border-primary/30 transition-colors"
                 >
-                  <div className="flex items-center">
-                    <BotMessageSquare className="h-8 w-8 mr-4 text-text-secondary flex-shrink-0" />
-                    <div className="flex-grow">
+                  <div className="flex items-center overflow-hidden">
+                    <div className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center mr-4 flex-shrink-0 border border-gray-100">
+                      <BotMessageSquare className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <div className="min-w-0">
                       <Link
                         to={`/mint-history/${item.id}`}
-                        className="font-semibold text-text-primary hover:underline"
+                        className="font-semibold text-text-primary hover:text-primary truncate block"
                       >
-                        {`Minted ${
-                          item.messageIds.length
-                        } messages from "${getConversationTitle(
-                          item.conversationId
-                        )}"`}
+                        {getConversationTitle(item.conversationId)}
                       </Link>
-                      <p className="text-sm text-text-secondary mt-1">
-                        Minted on: {new Date(item.timestamp).toLocaleString()}
+                      <p className="text-xs text-text-secondary mt-0.5">
+                        {new Date(item.timestamp).toLocaleDateString()} •{" "}
+                        {item.messageIds.length} messages
                       </p>
                     </div>
                   </div>
-                  <div className="text-right ml-4">
-                    <p className="font-bold text-lg text-green-600">
+                  <div className="text-right ml-4 flex-shrink-0">
+                    <p className="font-bold text-sm text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
                       +{item.reward.toFixed(2)}
                     </p>
-                    <p className="text-sm text-text-secondary">Tokens</p>
                   </div>
-                </div>
+                </motion.div>
               ))
             ) : (
-              <p className="text-text-secondary text-center py-8">
-                You haven't minted any conversations yet.
+              <p className="text-text-secondary text-center py-12 bg-white border border-gray-100 rounded-xl border-dashed">
+                No mint history yet. Start chatting!
               </p>
             ))}
         </div>
