@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
@@ -10,6 +12,7 @@ import {
   mintedHistoryAtom,
   userAddressAtom,
   selectedMessageIdsAtom,
+  isMobileInputFocusedAtom,
 } from "../../state/atoms";
 import { motion } from "framer-motion";
 import { Bot, Send, Paperclip } from "lucide-react";
@@ -80,6 +83,7 @@ const ChatBubble = ({
       ) : null}
     </div>
   );
+
   const timestampClass = isMobile
     ? "opacity-100"
     : "opacity-0 group-hover:opacity-100";
@@ -159,6 +163,9 @@ const ChatInterface = () => {
   const setHeaderConfig = useSetAtom(headerConfigAtom);
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
   const [selectedIds, setSelectedIds] = useAtom(selectedMessageIdsAtom);
+
+  const setIsMobileInputFocused = useSetAtom(isMobileInputFocusedAtom);
+
   const [inputValue, setInputValue] = useState("");
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -167,6 +174,12 @@ const ChatInterface = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { openConnectModal } = useConnectModal();
   const [isInputFocused, setIsInputFocused] = useState(false);
+
+  useEffect(() => {
+    if (isMobile) {
+      setIsMobileInputFocused(isInputFocused);
+    }
+  }, [isInputFocused, isMobile, setIsMobileInputFocused]);
 
   useEffect(() => {
     setSelectedIds(new Set());
@@ -254,7 +267,6 @@ const ChatInterface = () => {
           return c;
         })
       );
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConversations((prev) =>
         prev.map((c) => {
@@ -320,7 +332,6 @@ const ChatInterface = () => {
       };
       setMintedHistory((prev) => [newMintInfo, ...prev]);
       setSelectedIds(new Set());
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.update(mintToastId, {
         render: `Mint failed: ${error.message}`,

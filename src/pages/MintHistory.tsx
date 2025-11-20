@@ -18,9 +18,9 @@ interface StatCardProps {
 
 const StatCard: FC<StatCardProps> = ({ icon, title, value, colorClass }) => (
   <div
-    className={`p-4 rounded-xl border flex flex-col md:flex-row items-center space-y-2 md:space-x-4 md:space-y-0 ${colorClass}`}
+    className={`p-4 py-8 md:py-6 rounded-xl border flex flex-col md:flex-row items-center md:space-x-4 ${colorClass}`}
   >
-    <div className="p-2 rounded-lg bg-white/50">{icon}</div>
+    <div className="p-2 rounded-lg bg-white/50 hidden md:block">{icon}</div>
     <div className="flex flex-col items-center md:items-start">
       <p className="text-2xl font-bold leading-none">{value}</p>
       <p className="text-xs font-medium opacity-80 mt-1">{title}</p>

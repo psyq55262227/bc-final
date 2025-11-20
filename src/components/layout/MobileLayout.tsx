@@ -1,9 +1,10 @@
-import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { useAtom, useAtomValue } from "jotai";
 import {
   mobileHistoryOpenAtom,
   headerConfigAtom,
   activeConversationAtom,
+  isMobileInputFocusedAtom,
 } from "../../state/atoms";
 import { MessageSquare, Award, Menu } from "lucide-react";
 import MobileHistoryOverlay from "./MobileHistoryOverlay";
@@ -14,9 +15,13 @@ const MobileLayout = () => {
   const [historyOpen, setHistoryOpen] = useAtom(mobileHistoryOpenAtom);
   const [headerConfig, setHeaderConfig] = useAtom(headerConfigAtom);
   const activeConversation = useAtomValue(activeConversationAtom);
+
+  const isInputFocused = useAtomValue(isMobileInputFocusedAtom);
+
   const location = useLocation();
 
   const isChatPage = location.pathname.startsWith("/chat");
+  const chatTabTarget = isChatPage ? location.pathname : "/chat/new";
 
   useEffect(() => {
     let newTitle: string;
@@ -36,10 +41,8 @@ const MobileLayout = () => {
     setHeaderConfig((prev) => ({ ...prev, title: newTitle }));
   }, [location.pathname, activeConversation, setHeaderConfig, isChatPage]);
 
-  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex flex-col items-center justify-center flex-1 py-2 text-xs font-medium transition-colors ${
-      isActive ? "text-primary" : "text-text-secondary hover:text-text-primary"
-    }`;
+  const baseLinkClass =
+    "flex flex-col items-center justify-center flex-1 py-2 text-xs font-medium transition-colors";
 
   return (
     <div className="flex flex-col h-dvh w-full bg-background overflow-hidden">
@@ -72,24 +75,42 @@ const MobileLayout = () => {
         <Outlet />
       </main>
 
-      <nav className="h-[60px] bg-white border-t border-border flex flex-shrink-0 z-30 pb-safe">
-        <NavLink to="/chat/new" className={navLinkClass}>
+      <nav
+        className={`
+          h-[60px] bg-white border-t border-border flex-shrink-0 z-30 pb-safe
+          ${isInputFocused ? "hidden" : "flex"} 
+        `}
+      >
+        <Link
+          to={chatTabTarget}
+          className={`${baseLinkClass} ${
+            isChatPage
+              ? "text-primary"
+              : "text-text-secondary hover:text-text-primary"
+          }`}
+        >
           <div
-            className={`p-1.5 rounded-xl mb-0.5 ${
-              location.pathname.startsWith("/chat") ? "bg-primary/10" : ""
+            className={`p-1 rounded-xl mb-0.5 ${
+              isChatPage ? "bg-primary/10" : ""
             }`}
           >
             <MessageSquare
-              className={`h-5 w-5 ${
-                location.pathname.startsWith("/chat") ? "fill-current" : ""
-              }`}
+              className={`h-5 w-5 ${isChatPage ? "fill-current" : ""}`}
             />
           </div>
           <span>Chat</span>
-        </NavLink>
-        <NavLink to="/mint-history" className={navLinkClass}>
+        </Link>
+
+        <Link
+          to="/mint-history"
+          className={`${baseLinkClass} ${
+            location.pathname.startsWith("/mint-history")
+              ? "text-primary"
+              : "text-text-secondary hover:text-text-primary"
+          }`}
+        >
           <div
-            className={`p-1.5 rounded-xl mb-0.5 ${
+            className={`p-1 rounded-xl mb-0.5 ${
               location.pathname.startsWith("/mint-history")
                 ? "bg-primary/10"
                 : ""
@@ -104,7 +125,7 @@ const MobileLayout = () => {
             />
           </div>
           <span>Rewards</span>
-        </NavLink>
+        </Link>
       </nav>
     </div>
   );

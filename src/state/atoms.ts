@@ -4,6 +4,8 @@ import type { Conversation, HeaderConfig, MintedInfo } from "../types";
 
 const now = Date.now();
 
+export const isMobileInputFocusedAtom = atom(false);
+
 const initialConversations: Conversation[] = [
   {
     id: "1",
