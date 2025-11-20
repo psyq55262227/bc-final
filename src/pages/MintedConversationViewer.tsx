@@ -58,7 +58,7 @@ const MintedConversationViewer = () => {
 
   return (
     <div className="flex flex-col h-full w-full bg-chat-bg md:rounded-[var(--radius-card)] overflow-hidden">
-      <header className="px-6 py-4 flex items-center flex-shrink-0 bg-transparent">
+      <header className="px-6 py-4 flex items-center flex-shrink-0">
         <Link
           to="/mint-history"
           className="mr-4 p-2 rounded-full hover:bg-white transition-colors"

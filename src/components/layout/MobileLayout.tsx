@@ -51,24 +51,33 @@ const MobileLayout = () => {
       </AnimatePresence>
 
       {headerConfig.title && (
-        <header className="h-14 flex items-center justify-between px-4 bg-background/80 backdrop-blur-md sticky top-0 z-20 flex-shrink-0">
+        <header
+          className={`h-14 flex items-center ${
+            isChatPage ? "justify-between" : "justify-center"
+          }  px-4 bg-background/80 backdrop-blur-md sticky top-0 z-20 flex-shrink-0`}
+        >
           <div className="flex items-center">
-            <div className="w-[40px]">
-              {isChatPage && (
+            {isChatPage && (
+              <div className="w-[40px]">
                 <button
                   onClick={() => setHistoryOpen(true)}
                   className="p-2 -ml-2 rounded-full hover:bg-gray-200/50 text-text-primary"
                 >
                   <Menu size={20} />
                 </button>
-              )}
-            </div>
-            <h1 className="text-base font-bold text-text-primary truncate">
+              </div>
+            )}
+
+            <h1 className={`text-base font-bold text-text-primary truncate`}>
               {headerConfig.title}
             </h1>
           </div>
 
-          <div className="flex justify-end min-w-[40px]">
+          <div
+            className={`flex justify-end ${
+              Boolean(headerConfig.rightAction) && "min-w-[40px]"
+            } `}
+          >
             {headerConfig.rightAction}
           </div>
         </header>
