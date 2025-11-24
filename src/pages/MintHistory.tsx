@@ -293,7 +293,7 @@ const MintHistory = () => {
             )
           ) : (
             <div className="text-center py-12">
-              <p className="text-text-secondary">
+              <p className="text-text-secondary px-8">
                 Please connect your wallet to view your assets.
               </p>
             </div>
