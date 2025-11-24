@@ -50,7 +50,7 @@ const DesktopLayout = () => {
                     isActive ? "fill-current" : ""
                   }`}
                 />
-                <span>My Assets</span>
+                <span>Assets</span>
               </>
             )}
           </NavLink>
