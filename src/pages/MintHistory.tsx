@@ -262,7 +262,7 @@ const MintHistory = () => {
                             ${item.displayPrice}
                           </span>
                         </div>
-                        <div className="flex items-center p-2 px-4 bg-gray-100 text-gray-500 rounded-md text-sm font-semibold cursor-not-allowed">
+                        <div className="flex items-center justify-center h-9 px-4 min-w-[100px] bg-gray-100 text-gray-500 rounded-md text-sm font-semibold cursor-not-allowed">
                           <CheckCircle size={16} className="mr-2" />
                           Sold
                         </div>
@@ -288,7 +288,7 @@ const MintHistory = () => {
                                 price: item.price || 0,
                               })
                             }
-                            className="p-2.5 text-text-secondary hover:text-primary bg-gray-50 hover:bg-primary/10 rounded-md transition-colors"
+                            className="flex items-center justify-center h-9 w-9 text-text-secondary hover:text-primary bg-gray-50 hover:bg-primary/10 rounded-md transition-colors"
                             title="Set Price"
                           >
                             <Settings size={18} />
@@ -297,19 +297,19 @@ const MintHistory = () => {
                           <button
                             onClick={() => handleToggleList(item)}
                             className={`
-                                        p-2 text-sm font-semibold rounded-md transition-all flex items-center min-w-[90px] justify-center
-                                        ${
-                                          item.isListed
-                                            ? "bg-red-50 text-red-600 border border-red-100 hover:bg-red-100"
-                                            : "bg-text-primary text-white hover:bg-black border border-transparent"
-                                        }
-                                        ${
-                                          (!item.price || item.price <= 0) &&
-                                          !item.isListed
-                                            ? "opacity-50 cursor-not-allowed"
-                                            : ""
-                                        }
-                                    `}
+                                flex items-center justify-center h-9 px-4 min-w-[100px] text-sm font-semibold rounded-md transition-all
+                                ${
+                                  item.isListed
+                                    ? "bg-red-50 text-red-600 border border-red-100 hover:bg-red-100"
+                                    : "bg-text-primary text-white hover:bg-black border border-transparent"
+                                }
+                                ${
+                                  (!item.price || item.price <= 0) &&
+                                  !item.isListed
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : ""
+                                }
+                            `}
                           >
                             <Store size={16} className="mr-2" />
                             {item.isListed ? "Unlist" : "List"}
