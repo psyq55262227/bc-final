@@ -32,8 +32,7 @@ const Marketplace = () => {
       .filter((item) => {
         if (!item.isListed) return false;
         if (!item.price || item.price <= 0) return false;
-        // if (!userAddress) return true;
-        return item.ownerAddress !== userAddress;
+        return true;
       })
       .filter((item) => {
         const title =

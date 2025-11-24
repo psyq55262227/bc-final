@@ -9,6 +9,7 @@ import {
   Store,
   Settings,
   Sparkles,
+  CheckCircle,
 } from "lucide-react";
 import {
   mintedHistoryAtom,
@@ -70,20 +71,40 @@ const MintHistory = () => {
   }, []);
 
   const myAssets = useMemo(() => {
-    if (!userAddress) return [];
-    return mintedHistory.filter((item) => item.ownerAddress === userAddress);
-  }, [mintedHistory, userAddress]);
+    const targetAddress = userAddress || "0x123...mock";
+
+    return mintedHistory
+      .map((item) => {
+        const isMine = item.ownerAddress === targetAddress;
+
+        const soldTransaction = transactions.find(
+          (t) => t.assetId === item.id && t.sellerAddress === targetAddress
+        );
+        const isSoldByMe = !!soldTransaction;
+
+        if (!isMine && !isSoldByMe) return null;
+
+        return {
+          ...item,
+          isSold: isSoldByMe,
+          displayPrice: isSoldByMe ? soldTransaction?.price : item.price,
+          isMockOwner: item.ownerAddress === "0x123...mock",
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null);
+  }, [mintedHistory, userAddress, transactions]);
 
   const totalRevenue = useMemo(() => {
-    if (!userAddress) return 0;
+    const targetAddress = userAddress || "0x123...mock";
     return transactions
-      .filter((t) => t.sellerAddress === userAddress)
+      .filter((t) => t.sellerAddress === targetAddress)
       .reduce((sum, t) => sum + t.price, 0);
   }, [transactions, userAddress]);
 
-  const totalAssetsCount = myAssets.length;
-
-  const listedAssetsCount = myAssets.filter((item) => item.isListed).length;
+  const totalAssetsCount = myAssets.filter((a) => !a.isSold).length; // 只算还在手里的
+  const listedAssetsCount = myAssets.filter(
+    (a) => !a.isSold && a.isListed
+  ).length;
 
   const getConversationTitle = (id: string | undefined) => {
     if (!id) return "Invalid Conversation";
@@ -194,7 +215,7 @@ const MintHistory = () => {
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
-                  className="bg-white p-4 rounded-2xl border border-gray-200 flex flex-col md:flex-row md:items-center justify-between hover:border-primary/30 transition-all shadow-sm md:shadow-none"
+                  className="bg-white p-4 rounded-2xl border border-gray-200 flex flex-col md:flex-row md:items-center justify-between hover:border-primary/30 transition-all"
                 >
                   <div className="flex items-start md:items-center overflow-hidden w-full md:w-auto">
                     <div className="h-12 w-12 rounded-xl bg-gray-50 flex items-center justify-center mr-4 flex-shrink-0 border border-gray-100 text-gray-400">
@@ -225,50 +246,71 @@ const MintHistory = () => {
                   </div>
 
                   <div className="flex items-center w-full md:w-auto mt-4 pt-3 border-t border-gray-50 md:mt-0 md:pt-0 md:border-t-0 justify-start md:justify-end gap-3">
-                    <div className="flex flex-col items-start md:items-end mr-2">
-                      <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
-                        Selling Price
-                      </span>
-                      <span className="font-bold text-text-primary text-base">
-                        {item.price && item.price > 0 ? `$${item.price}` : "--"}
-                      </span>
-                    </div>
+                    {item.isSold ? (
+                      <div className="flex items-center justify-end w-full md:w-auto">
+                        <div className="flex flex-col items-start md:items-end mr-4">
+                          <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
+                            Sold For
+                          </span>
+                          <span className="font-bold text-emerald-600 text-base">
+                            ${item.displayPrice}
+                          </span>
+                        </div>
+                        <div className="flex items-center p-2 px-4 bg-gray-100 text-gray-500 rounded-md text-sm font-semibold cursor-not-allowed">
+                          <CheckCircle size={16} className="mr-2" />
+                          Sold
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex flex-col items-start md:items-end mr-2">
+                          <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
+                            Selling Price
+                          </span>
+                          <span className="font-bold text-text-primary text-base">
+                            {item.displayPrice && item.displayPrice > 0
+                              ? `$${item.displayPrice}`
+                              : "--"}
+                          </span>
+                        </div>
 
-                    <div className="flex items-center gap-2 ml-auto md:ml-0">
-                      <button
-                        onClick={() =>
-                          setEditingItem({
-                            id: item.id,
-                            price: item.price || 0,
-                          })
-                        }
-                        className="p-2.5 text-text-secondary hover:text-primary bg-gray-50 hover:bg-primary/10 rounded-xl transition-colors"
-                        title="Set Price"
-                      >
-                        <Settings size={18} />
-                      </button>
+                        <div className="flex items-center gap-2 ml-auto md:ml-0">
+                          <button
+                            onClick={() =>
+                              setEditingItem({
+                                id: item.id,
+                                price: item.price || 0,
+                              })
+                            }
+                            className="p-2.5 text-text-secondary hover:text-primary bg-gray-50 hover:bg-primary/10 rounded-md transition-colors"
+                            title="Set Price"
+                          >
+                            <Settings size={18} />
+                          </button>
 
-                      <button
-                        onClick={() => handleToggleList(item)}
-                        className={`
-                                px-4 py-2.5 text-sm font-semibold rounded-xl transition-all flex items-center min-w-[90px] justify-center
-                                ${
-                                  item.isListed
-                                    ? "bg-red-50 text-red-600 border border-red-100 hover:bg-red-100"
-                                    : "bg-text-primary text-white hover:bg-black border border-transparent"
-                                }
-                                ${
-                                  (!item.price || item.price <= 0) &&
-                                  !item.isListed
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                                }
-                            `}
-                      >
-                        <Store size={16} className="mr-2" />
-                        {item.isListed ? "Unlist" : "List"}
-                      </button>
-                    </div>
+                          <button
+                            onClick={() => handleToggleList(item)}
+                            className={`
+                                        p-2 text-sm font-semibold rounded-md transition-all flex items-center min-w-[90px] justify-center
+                                        ${
+                                          item.isListed
+                                            ? "bg-red-50 text-red-600 border border-red-100 hover:bg-red-100"
+                                            : "bg-text-primary text-white hover:bg-black border border-transparent"
+                                        }
+                                        ${
+                                          (!item.price || item.price <= 0) &&
+                                          !item.isListed
+                                            ? "opacity-50 cursor-not-allowed"
+                                            : ""
+                                        }
+                                    `}
+                          >
+                            <Store size={16} className="mr-2" />
+                            {item.isListed ? "Unlist" : "List"}
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </motion.div>
               ))
@@ -285,7 +327,7 @@ const MintHistory = () => {
                 </p>
                 <Link
                   to="/chat"
-                  className="px-6 py-2 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark transition-colors"
+                  className="px-8 py-2 bg-primary text-white text-sm rounded-sm font-semibold hover:bg-primary-dark transition-colors"
                 >
                   Start Chatting
                 </Link>

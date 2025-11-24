@@ -329,6 +329,11 @@ const ChatInterface = () => {
         metadataUrl,
         reward: Math.floor(Math.random() * (messagesToMint.length * 50)) + 20,
         timestamp: Date.now(),
+
+        ownerAddress: userAddress,
+        price: 0,
+        isListed: false,
+        isSold: false,
       };
       setMintedHistory((prev) => [newMintInfo, ...prev]);
       setSelectedIds(new Set());
