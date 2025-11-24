@@ -9,37 +9,37 @@ import {
 import { MessageSquare, Award, Menu } from "lucide-react";
 import MobileHistoryOverlay from "./MobileHistoryOverlay";
 import { AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
 
 const MobileLayout = () => {
   const [historyOpen, setHistoryOpen] = useAtom(mobileHistoryOpenAtom);
-  const [headerConfig, setHeaderConfig] = useAtom(headerConfigAtom);
+  const [headerConfig] = useAtom(headerConfigAtom);
   const activeConversation = useAtomValue(activeConversationAtom);
-
   const isInputFocused = useAtomValue(isMobileInputFocusedAtom);
 
   const location = useLocation();
-
   const isChatPage = location.pathname.startsWith("/chat");
   const chatTabTarget = isChatPage ? location.pathname : "/chat/new";
 
-  useEffect(() => {
-    let newTitle: string;
-    if (isChatPage) {
-      if (location.pathname === "/chat/new") {
-        newTitle = "New Chat";
-      } else {
-        newTitle = activeConversation?.title || "Chat";
-      }
-    } else if (location.pathname.startsWith("/mint-history")) {
-      const pathSegments = location.pathname.split("/").filter(Boolean);
-      if (pathSegments.length > 1) newTitle = "";
-      else newTitle = "Assets";
+  let pageTitle = "";
+  let isRewardsPage = false;
+
+  if (isChatPage) {
+    if (location.pathname === "/chat/new") {
+      pageTitle = "New Chat";
     } else {
-      newTitle = "Chat as Assets";
+      pageTitle = activeConversation?.title || "Chat";
     }
-    setHeaderConfig((prev) => ({ ...prev, title: newTitle }));
-  }, [location.pathname, activeConversation, setHeaderConfig, isChatPage]);
+  } else if (location.pathname.startsWith("/mint-history")) {
+    const pathSegments = location.pathname.split("/").filter(Boolean);
+    if (pathSegments.length > 1) {
+      pageTitle = "";
+    } else {
+      pageTitle = "Rewards";
+      isRewardsPage = true;
+    }
+  } else {
+    pageTitle = "Chat as Assets";
+  }
 
   const baseLinkClass =
     "flex flex-col items-center justify-center flex-1 py-2 text-xs font-medium transition-colors";
@@ -50,15 +50,25 @@ const MobileLayout = () => {
         {historyOpen && <MobileHistoryOverlay />}
       </AnimatePresence>
 
-      {headerConfig.title && (
+      {pageTitle && (
         <header
-          className={`h-14 flex items-center ${
-            isChatPage ? "justify-between" : "justify-center"
-          }  px-4 bg-background/80 backdrop-blur-md sticky top-0 z-20 flex-shrink-0`}
+          className={`
+            h-14 px-4 bg-background/80 backdrop-blur-md sticky top-0 z-20 flex-shrink-0 border-b border-gray-100/50
+            flex items-center relative
+            ${isRewardsPage ? "justify-center" : "justify-between"}
+          `}
         >
-          <div className="flex items-center">
-            {isChatPage && (
-              <div className="w-[40px]">
+          {/* 左侧区域：Chat 页面显示 Menu + Title，Rewards 页面只显示 Title (居中) */}
+
+          {isRewardsPage ? (
+            /* Rewards Page: 绝对居中 */
+            <h1 className="text-base font-bold text-text-primary">
+              {pageTitle}
+            </h1>
+          ) : (
+            /* Chat Page: 靠左对齐，Menu 和 Title 紧挨着 */
+            <div className="flex items-center min-w-0 flex-1 mr-10">
+              <div className="w-[32px] flex-shrink-0 flex items-center">
                 <button
                   onClick={() => setHistoryOpen(true)}
                   className="p-2 -ml-2 rounded-full hover:bg-gray-200/50 text-text-primary"
@@ -66,18 +76,14 @@ const MobileLayout = () => {
                   <Menu size={20} />
                 </button>
               </div>
-            )}
+              <h1 className="text-base font-bold text-text-primary truncate">
+                {pageTitle}
+              </h1>
+            </div>
+          )}
 
-            <h1 className={`text-base font-bold text-text-primary truncate`}>
-              {headerConfig.title}
-            </h1>
-          </div>
-
-          <div
-            className={`flex justify-end ${
-              Boolean(headerConfig.rightAction) && "min-w-[40px]"
-            } `}
-          >
+          {/* 右侧 Action 区域：绝对定位，确保不影响中间布局，且位置固定 */}
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
             {headerConfig.rightAction}
           </div>
         </header>
@@ -136,7 +142,7 @@ const MobileLayout = () => {
               }`}
             />
           </div>
-          <span>Assets</span>
+          <span>Rewards</span>
         </Link>
       </nav>
     </div>

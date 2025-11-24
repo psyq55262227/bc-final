@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Link } from "react-router-dom";
 import { type ReactNode, type FC, useMemo, useState, useEffect } from "react";
 import {
@@ -16,6 +16,7 @@ import {
   conversationsAtom,
   userAddressAtom,
   transactionsAtom,
+  headerConfigAtom,
 } from "../state/atoms";
 import { motion } from "framer-motion";
 import PriceInputModal from "../components/common/PriceInputModal";
@@ -59,6 +60,11 @@ const MintHistory = () => {
   const transactions = useAtomValue(transactionsAtom);
   const conversations = useAtomValue(conversationsAtom);
   const [userAddress] = useAtom(userAddressAtom);
+
+  const setHeaderConfig = useSetAtom(headerConfigAtom);
+  useEffect(() => {
+    setHeaderConfig((prev) => ({ ...prev, rightAction: null }));
+  }, [setHeaderConfig]);
 
   const [isHydrated, setIsHydrated] = useState(false);
   const [editingItem, setEditingItem] = useState<{
@@ -253,7 +259,7 @@ const MintHistory = () => {
 
                   <div className="flex items-center w-full md:w-auto mt-4 pt-3 border-t border-gray-50 md:mt-0 md:pt-0 md:border-t-0 justify-start md:justify-end gap-3">
                     {item.isSold ? (
-                      <div className="flex items-center justify-between md:justify-end w-full md:w-auto">
+                      <div className="flex items-center justify-start md:justify-end w-full md:w-auto">
                         <div className="flex flex-col items-start md:items-end mr-4">
                           <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
                             Sold For
