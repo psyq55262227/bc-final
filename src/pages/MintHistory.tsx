@@ -77,14 +77,17 @@ const MintHistory = () => {
   }, []);
 
   const myAssets = useMemo(() => {
-    const targetAddress = userAddress || "0x123...mock";
+    if (!userAddress) return [];
+
+    const targetAddresses = [userAddress, "0x123...mock"];
 
     return mintedHistory
       .map((item) => {
-        const isMine = item.ownerAddress === targetAddress;
+        const isMine = targetAddresses.includes(item.ownerAddress!);
 
         const soldTransaction = transactions.find(
-          (t) => t.assetId === item.id && t.sellerAddress === targetAddress
+          (t) =>
+            t.assetId === item.id && targetAddresses.includes(t.sellerAddress)
         );
         const isSoldByMe = !!soldTransaction;
 
@@ -101,9 +104,11 @@ const MintHistory = () => {
   }, [mintedHistory, userAddress, transactions]);
 
   const totalRevenue = useMemo(() => {
-    const targetAddress = userAddress || "0x123...mock";
+    if (!userAddress) return 0;
+
+    const targetAddresses = [userAddress, "0x123...mock"];
     return transactions
-      .filter((t) => t.sellerAddress === targetAddress)
+      .filter((t) => targetAddresses.includes(t.sellerAddress))
       .reduce((sum, t) => sum + t.price, 0);
   }, [transactions, userAddress]);
 

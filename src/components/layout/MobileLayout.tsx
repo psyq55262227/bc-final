@@ -58,15 +58,11 @@ const MobileLayout = () => {
             ${isRewardsPage ? "justify-center" : "justify-between"}
           `}
         >
-          {/* 左侧区域：Chat 页面显示 Menu + Title，Rewards 页面只显示 Title (居中) */}
-
           {isRewardsPage ? (
-            /* Rewards Page: 绝对居中 */
             <h1 className="text-base font-bold text-text-primary">
               {pageTitle}
             </h1>
           ) : (
-            /* Chat Page: 靠左对齐，Menu 和 Title 紧挨着 */
             <div className="flex items-center min-w-0 flex-1 mr-10">
               <div className="w-[32px] flex-shrink-0 flex items-center">
                 <button
@@ -82,7 +78,6 @@ const MobileLayout = () => {
             </div>
           )}
 
-          {/* 右侧 Action 区域：绝对定位，确保不影响中间布局，且位置固定 */}
           <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
             {headerConfig.rightAction}
           </div>
