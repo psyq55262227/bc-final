@@ -211,11 +211,17 @@ const MintHistory = () => {
               myAssets.map((item, index) => (
                 <motion.div
                   key={item.id}
-                  layout
-                  initial={{ y: 10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="bg-white p-4 rounded-2xl border border-gray-200 flex flex-col md:flex-row md:items-center justify-between hover:border-primary/30 transition-all"
+                  layout="position"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20,
+                    mass: 1,
+                    delay: index * 0.05,
+                  }}
+                  className="bg-white p-4 rounded-2xl border border-gray-200 flex flex-col md:flex-row md:items-center justify-between hover:border-primary/30 transition-colors duration-200 will-change-transform"
                 >
                   <div className="flex items-start md:items-center overflow-hidden w-full md:w-auto">
                     <div className="h-12 w-12 rounded-xl bg-gray-50 flex items-center justify-center mr-4 flex-shrink-0 border border-gray-100 text-gray-400">

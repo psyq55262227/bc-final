@@ -34,7 +34,7 @@ const MobileLayout = () => {
     } else if (location.pathname.startsWith("/mint-history")) {
       const pathSegments = location.pathname.split("/").filter(Boolean);
       if (pathSegments.length > 1) newTitle = "";
-      else newTitle = "Rewards";
+      else newTitle = "Assets";
     } else {
       newTitle = "Chat as Assets";
     }
@@ -136,7 +136,7 @@ const MobileLayout = () => {
               }`}
             />
           </div>
-          <span>Rewards</span>
+          <span>Assets</span>
         </Link>
       </nav>
     </div>
