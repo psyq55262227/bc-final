@@ -101,7 +101,7 @@ const MintHistory = () => {
       .reduce((sum, t) => sum + t.price, 0);
   }, [transactions, userAddress]);
 
-  const totalAssetsCount = myAssets.filter((a) => !a.isSold).length; // 只算还在手里的
+  const totalAssetsCount = myAssets.filter((a) => !a.isSold).length;
   const listedAssetsCount = myAssets.filter(
     (a) => !a.isSold && a.isListed
   ).length;
@@ -247,7 +247,7 @@ const MintHistory = () => {
 
                   <div className="flex items-center w-full md:w-auto mt-4 pt-3 border-t border-gray-50 md:mt-0 md:pt-0 md:border-t-0 justify-start md:justify-end gap-3">
                     {item.isSold ? (
-                      <div className="flex items-center justify-end w-full md:w-auto">
+                      <div className="flex items-center justify-between md:justify-end w-full md:w-auto">
                         <div className="flex flex-col items-start md:items-end mr-4">
                           <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
                             Sold For
