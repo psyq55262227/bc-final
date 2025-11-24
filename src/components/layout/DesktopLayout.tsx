@@ -1,6 +1,11 @@
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, Link } from "react-router-dom";
 import ChatHistoryList from "../chat/ChatHistoryList";
-import { Award, MessageSquare, BotMessageSquare } from "lucide-react";
+import {
+  Award,
+  MessageSquare,
+  BotMessageSquare,
+  ShoppingBag,
+} from "lucide-react";
 
 const DesktopLayout = () => {
   const navItemPadding = "px-3 py-2.5";
@@ -49,6 +54,14 @@ const DesktopLayout = () => {
               </>
             )}
           </NavLink>
+
+          <Link
+            to="/market"
+            className={`relative flex items-center ${navItemPadding} rounded-lg text-sm font-medium transition-all duration-200 mb-1 text-text-secondary hover:text-text-primary hover:bg-gray-50`}
+          >
+            <ShoppingBag className="mr-3 h-5 w-5" />
+            <span>Marketplace</span>
+          </Link>
         </nav>
 
         <div className="flex-1 flex flex-col overflow-hidden">

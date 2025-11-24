@@ -1,6 +1,11 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import type { Conversation, HeaderConfig, MintedInfo } from "../types";
+import type {
+  Conversation,
+  HeaderConfig,
+  MintedInfo,
+  Transaction,
+} from "../types";
 
 const now = Date.now();
 
@@ -69,6 +74,9 @@ const initialMintedHistory: MintedInfo[] = [
     metadataUrl: "ipfs://Qm...",
     reward: 125.5,
     timestamp: Date.now() - 90000,
+    price: 0,
+    isListed: false,
+    ownerAddress: "0x123...mock", // 初始属于模拟用户
   },
 ];
 
@@ -92,8 +100,9 @@ export const mintedHistoryAtom = atomWithStorage<MintedInfo[]>(
   initialMintedHistory
 );
 
-export const totalRewardsAtom = atom<number>((get) =>
-  get(mintedHistoryAtom).reduce((total, item) => total + item.reward, 0)
+export const transactionsAtom = atomWithStorage<Transaction[]>(
+  "chat_transactions",
+  []
 );
 
 export const mobileHistoryOpenAtom = atom(false);

@@ -22,6 +22,20 @@ export interface MintedInfo {
   metadataUrl: string;
   reward: number;
   timestamp: number;
+  // 市场相关字段
+  price?: number;
+  isListed?: boolean;
+  ownerAddress?: string;
+}
+
+// 交易记录类型
+export interface Transaction {
+  id: string;
+  assetId: string;
+  sellerAddress: string;
+  buyerAddress: string;
+  price: number;
+  timestamp: number;
 }
 
 export interface HeaderConfig {

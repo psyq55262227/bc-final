@@ -11,6 +11,7 @@ import MobileLayout from "./components/layout/MobileLayout";
 
 import ChatPage from "./pages/ChatPage";
 import MintHistory from "./pages/MintHistory";
+import Marketplace from "./pages/Marketplace";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MintedConversationViewer from "./pages/MintedConversationViewer";
@@ -26,6 +27,8 @@ function App() {
     <>
       <Router>
         <Routes>
+          <Route path="/market" element={<Marketplace />} />
+
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/chat/new" replace />} />
             <Route path="chat" element={<Navigate to="/chat/new" replace />} />
