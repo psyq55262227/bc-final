@@ -17,7 +17,7 @@ import { buyAsset } from "../api";
 
 const Marketplace = () => {
   const [mintedHistory, setMintedHistory] = useAtom(mintedHistoryAtom);
-  const setTransactions = useSetAtom(transactionsAtom); // 用于记录交易
+  const setTransactions = useSetAtom(transactionsAtom);
   const conversations = useAtomValue(conversationsAtom);
   const userAddress = useAtomValue(userAddressAtom);
 
@@ -174,7 +174,7 @@ const Marketplace = () => {
                       mass: 1,
                       delay: index * 0.05,
                     }}
-                    className="bg-white rounded-2xl p-4 md:p-5 border border-gray-100 hover:border-primary/30 transition-colors duration-200 group flex flex-col will-change-transform"
+                    className="bg-white rounded-2xl p-6 md:p-5 border border-gray-100 hover:border-primary/30 transition-colors duration-200 group flex flex-col will-change-transform"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-teal-100 flex items-center justify-center text-primary">
