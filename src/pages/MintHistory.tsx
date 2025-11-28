@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Link } from "react-router-dom";
@@ -21,7 +22,11 @@ import {
 import { motion } from "framer-motion";
 import PriceInputModal from "../components/common/PriceInputModal";
 import { toast } from "react-toastify";
-import { setAssetPrice, toggleListing } from "../api";
+
+import { useWriteContract, usePublicClient } from "wagmi";
+import { parseEther } from "viem";
+import { MARKETPLACE_ADDRESS, MARKETPLACE_ABI } from "../constants/contracts";
+import { getNextListingId } from "../utils/listingId";
 
 interface StatCardProps {
   icon: ReactNode;
@@ -62,29 +67,26 @@ const MintHistory = () => {
   const [userAddress] = useAtom(userAddressAtom);
 
   const setHeaderConfig = useSetAtom(headerConfigAtom);
+
+  const { writeContractAsync } = useWriteContract();
+  const publicClient = usePublicClient();
+
   useEffect(() => {
     setHeaderConfig((prev) => ({ ...prev, rightAction: null }));
   }, [setHeaderConfig]);
 
-  const [isHydrated, setIsHydrated] = useState(false);
   const [editingItem, setEditingItem] = useState<{
     id: string;
     price: number;
   } | null>(null);
 
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
-
   const myAssets = useMemo(() => {
     if (!userAddress) return [];
-
     const targetAddresses = [userAddress, "0x123...mock"];
 
     return mintedHistory
       .map((item) => {
-        const isMine = targetAddresses.includes(item.ownerAddress!);
-
+        const isMine = targetAddresses.includes(item.ownerAddress || "");
         const soldTransaction = transactions.find(
           (t) =>
             t.assetId === item.id && targetAddresses.includes(t.sellerAddress)
@@ -105,7 +107,6 @@ const MintHistory = () => {
 
   const totalRevenue = useMemo(() => {
     if (!userAddress) return 0;
-
     const targetAddresses = [userAddress, "0x123...mock"];
     return transactions
       .filter((t) => targetAddresses.includes(t.sellerAddress))
@@ -126,17 +127,12 @@ const MintHistory = () => {
 
   const handlePriceUpdate = async (price: number) => {
     if (!editingItem) return;
-    try {
-      await setAssetPrice(editingItem.id, price);
-      setMintedHistory((prev) =>
-        prev.map((item) =>
-          item.id === editingItem.id ? { ...item, price } : item
-        )
-      );
-      toast.success("Price updated successfully");
-    } catch (error) {
-      toast.error("Failed to update price");
-    }
+    setMintedHistory((prev) =>
+      prev.map((item) =>
+        item.id === editingItem.id ? { ...item, price } : item
+      )
+    );
+    toast.success("Price updated!");
   };
 
   const handleToggleList = async (item: (typeof mintedHistory)[0]) => {
@@ -145,38 +141,65 @@ const MintHistory = () => {
       setEditingItem({ id: item.id, price: item.price || 0 });
       return;
     }
+
     const newStatus = !item.isListed;
-    const toastId = toast.loading(
-      newStatus ? "Listing on marketplace..." : "Unlisting..."
-    );
-    try {
-      await toggleListing(item.id, newStatus);
+
+    if (newStatus === true) {
+      const toastId = toast.loading("Requesting wallet signature...");
+      try {
+        const priceInWei = parseEther(item.price.toString());
+        const dataHash = item.metadataUrl || "ipfs://placeholder";
+
+        const txHash = await writeContractAsync({
+          address: MARKETPLACE_ADDRESS,
+          abi: MARKETPLACE_ABI,
+          functionName: "listData",
+          args: [dataHash, priceInWei],
+        });
+
+        const localId = getNextListingId();
+
+        setMintedHistory((prev) =>
+          prev.map((h) =>
+            h.id === item.id
+              ? {
+                  ...h,
+                  isListed: true,
+                  listingId: localId,
+                }
+              : h
+          )
+        );
+
+        toast.update(toastId, {
+          render: `Listed Successfully! ID: #${localId}`,
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      } catch (error: any) {
+        console.error("Listing Error Details:", error);
+
+        const errorMessage =
+          error.shortMessage || error.message || "Unknown Error";
+
+        toast.update(toastId, {
+          render: `Error: ${errorMessage}`,
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+        });
+      }
+    } else {
       setMintedHistory((prev) =>
-        prev.map((h) => (h.id === item.id ? { ...h, isListed: newStatus } : h))
+        prev.map((h) => (h.id === item.id ? { ...h, isListed: false } : h))
       );
-      toast.update(toastId, {
-        render: newStatus ? "Item Listed!" : "Item Unlisted",
-        type: "success",
-        isLoading: false,
-        autoClose: 3000,
-      });
-    } catch (error) {
-      toast.update(toastId, {
-        render: "Operation failed",
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-      });
+      toast.info("Item unlisted.");
     }
   };
 
   return (
-    <motion.div
-      className="p-4 md:p-8 h-full w-full overflow-y-auto custom-scrollbar bg-chat-bg"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: isHydrated ? 1 : 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <motion.div className="p-4 md:p-8 h-full w-full overflow-y-auto custom-scrollbar bg-chat-bg">
       <header className="mb-6 md:mb-8 hidden md:block">
         <h1 className="text-2xl font-bold text-text-primary mb-1">My Assets</h1>
         <p className="text-text-secondary text-sm">
@@ -188,7 +211,7 @@ const MintHistory = () => {
         <StatCard
           icon={<BadgeDollarSign className="text-emerald-600" />}
           title="Revenue"
-          value={`$${totalRevenue.toFixed(0)}`}
+          value={`$${totalRevenue.toFixed(4)}`}
           colorClass="bg-emerald-50/80 border-emerald-100 text-emerald-800"
         />
         <StatCard
@@ -217,7 +240,7 @@ const MintHistory = () => {
         </div>
 
         <div className="space-y-3 pb-24 md:pb-10">
-          {isHydrated && userAddress ? (
+          {userAddress ? (
             myAssets.length > 0 ? (
               myAssets.map((item, index) => (
                 <motion.div
@@ -248,7 +271,8 @@ const MintHistory = () => {
                         </Link>
                         {item.isListed && (
                           <span className="flex items-center px-1.5 py-0.5 bg-green-100 text-green-700 rounded-md text-[10px] font-bold uppercase tracking-wide border border-green-200">
-                            <Sparkles size={10} className="mr-1" /> Listed
+                            <Sparkles size={10} className="mr-1" /> Listed #
+                            {item.listingId}
                           </span>
                         )}
                       </div>
