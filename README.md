@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# ChAInChat - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🌟 Features
 
-Currently, two official plugins are available:
+- **AI Chat Interface:** A clean, ChatGPT-like interface for generating content (streaming simulated).
+- **Mint as NFT:** Select specific message exchanges and mint them as verified assets on-chain.
+- **Wallet Integration:** Seamless connection with MetaMask/RainbowKit (supports Sepolia/Ethereum).
+- **Asset Management:** "My Assets" dashboard to view, price, and list/unlist minted conversations.
+- **Decentralized Marketplace:** Buy and sell prompt chains using DataToken (DTK).
+- **Responsive Design:** Fully optimized layouts for both Desktop and Mobile views.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠 Tech Stack
 
-## React Compiler
+- **Framework:** React 19 + TypeScript + Vite
+- **Styling:** Tailwind CSS v4 + Framer Motion (Animations)
+- **State Management:** Jotai
+- **Web3 Integration:** Wagmi + Viem + RainbowKit
+- **Data Fetching:** TanStack Query + Axios
+- **Routing:** React Router DOM v7
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Getting Started
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js (v18 or higher recommended)
+- npm or yarn
+- A Web3 wallet (e.g., MetaMask) installed in your browser.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1.  **Clone the repository:**
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+    ```bash
+    git clone https://github.com/psyq55262227/bc-final.git
+    cd chainchat-frontend
+    ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2.  **Install dependencies:**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+3.  **Start the development server:**
+
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
+
+4.  **Open in Browser:**
+    Navigate to `http://localhost:5173` to view the application.
+
+## 🧪 Testing & Demo Guide (For Graders)
+
+To facilitate testing without requiring the full backend/blockchain infrastructure to be locally deployed, this frontend is currently configured with **Mock Mode enabled** for API calls, while still allowing real Wallet connectivity for UI states.
+
+**Recommended Testing Flow:**
+
+1.  **Connect Wallet:** Click the "Connect Wallet" button in the top right. You can use any test wallet.
+2.  **Chat:**
+    - Navigate to "Chat".
+    - Type `RWA` to trigger a specific demo response, or type anything else for a generic response.
+3.  **Mint:**
+    - Click the checkbox circle next to a message to select it.
+    - Click "Mint Selected".
+    - _Note: In Mock mode, this simulates the IPFS upload and returns a success toast._
+4.  **Manage Assets:**
+    - Go to "Assets" (or "Rewards" on mobile).
+    - You will see your minted items. Click the **Settings (Gear)** icon to set a price.
+    - Click **List** to put the item on the market.
+5.  **Marketplace:**
+    - Go to "Marketplace".
+    - You will see listed items.
+    - _Note: Smart contract interactions (Buy/List) require a Web3 provider. If you are not on the correct testnet, the UI handles the error gracefully or logs to console._
+
+## 📂 Project Structure
+
+```text
+src/
+├── api/             # API integration (includes mock.ts for demo)
+├── components/      # Reusable UI components
+│   ├── chat/        # Chat interface specific components
+│   ├── common/      # Buttons, Modals, Wallet connect
+│   └── layout/      # Desktop vs Mobile layout wrappers
+├── constants/       # Contract addresses and ABIs
+├── hooks/           # Custom React hooks (useWallet, etc.)
+├── pages/           # Main route pages (Chat, Marketplace, History)
+├── state/           # Global state management (Jotai atoms)
+└── types/           # TypeScript interfaces
 ```
